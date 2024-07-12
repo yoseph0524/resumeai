@@ -9,9 +9,9 @@ export default function Project() {
   const initialProject = storedProject
     ? JSON.parse(storedProject).map((proj) => ({
         ...proj,
-        description: Array.isArray(proj.description)
-          ? proj.description
-          : [proj.description],
+        accomplishment: Array.isArray(proj.accomplishment)
+          ? proj.accomplishment
+          : [proj.accomplishment],
       }))
     : [
         {
@@ -20,7 +20,9 @@ export default function Project() {
           start_date: "",
           end_date: "",
           url: "",
-          description: [""],
+          used: "",
+          description: "",
+          accomplishment: [""],
         },
       ];
 
@@ -36,25 +38,25 @@ export default function Project() {
     setProject(updatedProject);
   };
 
-  const handleDescriptionChange = (projIndex, descIndex, e) => {
+  const handleAccomplishmentChange = (projIndex, descIndex, e) => {
     const updatedProject = [...project];
-    updatedProject[projIndex].description[descIndex] = e.target.value;
+    updatedProject[projIndex].accomplishment[descIndex] = e.target.value;
     setProject(updatedProject);
   };
 
-  const addDescription = (projIndex) => {
+  const addAccomplishment = (projIndex) => {
     const updatedProject = [...project];
-    updatedProject[projIndex].description.push("");
+    updatedProject[projIndex].accomplishment.push("");
     setProject(updatedProject);
   };
 
-  const deleteDescription = (projIndex, descIndex) => {
+  const deleteAccomplishment = (projIndex, descIndex) => {
     const updatedProject = [...project];
-    updatedProject[projIndex].description = updatedProject[
+    updatedProject[projIndex].accomplishment = updatedProject[
       projIndex
-    ].description.filter((_, i) => i !== descIndex);
-    if (updatedProject[projIndex].description.length === 0) {
-      updatedProject[projIndex].description.push("");
+    ].accomplishment.filter((_, i) => i !== descIndex);
+    if (updatedProject[projIndex].accomplishment.length === 0) {
+      updatedProject[projIndex].accomplishment.push("");
     }
     setProject(updatedProject);
   };
@@ -68,7 +70,9 @@ export default function Project() {
         start_date: "",
         end_date: "",
         url: "",
-        description: [""],
+        used: "",
+        description: "",
+        accomplishment: [""],
       },
     ]);
   };
@@ -82,7 +86,9 @@ export default function Project() {
         start_date: "",
         end_date: "",
         url: "",
-        description: [""],
+        used: "",
+        description: "",
+        accomplishment: [""],
       });
     }
     setProject(updatedProject);
@@ -195,8 +201,31 @@ export default function Project() {
                   onChange={(e) => handleChange(index, e)}
                   className="input"
                 />
-                <label className="label">Description:</label>
-                {proj.description.map((desc, descIndex) => (
+                <label htmlFor={`description-${index}`} className="label">
+                  Description:
+                </label>
+                <input
+                  type="text"
+                  id={`description-${index}`}
+                  name="description"
+                  value={proj.description}
+                  onChange={(e) => handleChange(index, e)}
+                  className="input"
+                />
+                <label htmlFor={`used-${index}`} className="label">
+                  Used:
+                </label>
+                <input
+                  type="text"
+                  id={`used-${index}`}
+                  name="used"
+                  value={proj.used}
+                  onChange={(e) => handleChange(index, e)}
+                  className="input"
+                />
+
+                <label className="label">Accomplishment:</label>
+                {proj.accomplishment.map((desc, descIndex) => (
                   <div
                     key={descIndex}
                     style={{
@@ -204,10 +233,10 @@ export default function Project() {
                     }}
                   >
                     <input
-                      name={`description-${descIndex}`}
+                      name={`accomplishment-${descIndex}`}
                       value={desc}
                       onChange={(e) =>
-                        handleDescriptionChange(index, descIndex, e)
+                        handleAccomplishmentChange(index, descIndex, e)
                       }
                       className="input"
                       style={{ flex: 1, marginRight: "0.5rem" }}
@@ -215,7 +244,7 @@ export default function Project() {
                     <button
                       type="button"
                       className="button"
-                      onClick={() => deleteDescription(index, descIndex)}
+                      onClick={() => deleteAccomplishment(index, descIndex)}
                       style={{ height: "45px", marginTop: "8px" }}
                     >
                       Delete
@@ -225,10 +254,10 @@ export default function Project() {
                 <button
                   type="button"
                   className="button"
-                  onClick={() => addDescription(index)}
+                  onClick={() => addAccomplishment(index)}
                   style={{ marginLeft: 0, marginBottom: "3rem" }}
                 >
-                  Add Description
+                  Add accomplishment
                 </button>
                 <br />
               </div>

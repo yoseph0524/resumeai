@@ -207,7 +207,7 @@ export const CreateResume = ({ resumeData }) => {
       yOffset += 0.5;
 
       for (const key in project) {
-        if (key === "description" && Array.isArray(project[key])) {
+        if (key === "accomplishment" && Array.isArray(project[key])) {
           project[key].forEach((desc) => {
             const descText = doc.splitTextToSize(`${bulletPoint} ${desc}`, 19);
             descText.forEach((line) => {

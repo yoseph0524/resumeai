@@ -109,9 +109,11 @@ export default function Review() {
                   <p>Start Date: {project.start_date}</p>
                   <p>End Date: {project.end_date}</p>
                   <p>URL: {project.url}</p>
+                  <p>Description: {project.description}</p>
+                  <p>Used: {project.used}</p>
                   <div>
-                    <p>Description:</p>
-                    {project.description.map((desc, descIndex) =>
+                    <p>Accomplishment:</p>
+                    {project.accomplishment.map((desc, descIndex) =>
                       desc === "" ? null : (
                         <p key={descIndex} style={{ textIndent: "2em" }}>
                           &bull; {desc}

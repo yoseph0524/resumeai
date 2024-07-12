@@ -136,10 +136,31 @@ export default function Home() {
       );
     }
   };
+  const fakeData = {
+    personalInfo: {
+      name: "Yoseph Chong",
+      email: "yosephchong0524@gmail.com",
+      phone: "7176721827",
+      url: "https://codesandbox.io/s",
+      website: "",
+    },
+    summary:
+      "Dedicated marketing professional with a proven track record in market analysis and campaign execution. Skilled in both traditional and digital marketing strategies, with a strong foundation in economic principles and project management.",
+  };
   const analyzeResume = async (jsonData) => {
     setLoading(true);
+    console.log("Type of fakeData:", typeof fakeData);
+    console.log("Type of jsonData:", typeof jsonData);
+    console.log("Structure of fakeData:", JSON.stringify(fakeData, null, 2));
+    console.log(
+      "Structure of fakeData2:",
+      JSON.stringify(JSON.stringify(fakeData), null, 2)
+    );
+    let dattaa = JSON.stringify(fakeData).replace(/"/g, "");
+    console.log(dattaa);
+    console.log("Structure of jsonData:", JSON.stringify(jsonData, null, 2));
     const response = await fetch(
-      "https://fnhlgmlpxaugxpvyayrx2em44i0trwsq.lambda-url.us-east-1.on.aws/resumeanalyze",
+      "https://fnhlgmlpxaugxpvyayrx2em44i0trwsq.lambda-url.us-east-1.on.aws/coverletter",
       {
         method: "POST",
         headers: {
