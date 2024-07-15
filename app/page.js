@@ -30,6 +30,13 @@ export default function analyze() {
     router.push("/create");
   };
 
+  const handleSignInClick = () => {
+    router.push("/Auth/SignIn");
+  };
+  const handleSignUpClick = () => {
+    router.push("/Auth/SignUp");
+  };
+
   return (
     <CacheProvider>
       <ChakraProvider>
@@ -201,45 +208,44 @@ export default function analyze() {
                 gap={4} // You can specify the gap size here
                 mt={4}
               >
-                <Link href="/Auth/SignUp">
-                  <Button
-                    as={motion.button}
-                    fontSize={"sm"}
-                    fontWeight={600}
-                    color={"white"}
-                    bg={"#FF0080"}
-                    href={"#"}
-                    whileHover={{
-                      scale: 1.1,
-                      backgroundColor: "#e00071",
-                    }}
-                    whileTap={{
-                      scale: 0.9,
-                    }}
-                  >
-                    Sign Up
-                  </Button>
-                </Link>
-                <Link href="/Auth/SignIn">
-                  <Button
-                    as={motion.button}
-                    fontSize={"sm"}
-                    fontWeight={600}
-                    color={"white"}
-                    bg={"#FF0080"}
-                    href={"#"}
-                    whileHover={{
-                      scale: 1.1,
-                      opacity: 0.8,
-                      backgroundColor: "#e00071",
-                    }}
-                    whileTap={{
-                      scale: 0.9,
-                    }}
-                  >
-                    Sign In
-                  </Button>
-                </Link>
+                <Button
+                  as={motion.button}
+                  fontSize={"sm"}
+                  fontWeight={600}
+                  color={"white"}
+                  bg={"#FF0080"}
+                  href={"#"}
+                  onClick={handleSignUpClick}
+                  whileHover={{
+                    scale: 1.1,
+                    backgroundColor: "#e00071",
+                  }}
+                  whileTap={{
+                    scale: 0.9,
+                  }}
+                >
+                  Sign Up
+                </Button>
+
+                <Button
+                  as={motion.button}
+                  fontSize={"sm"}
+                  onClick={handleSignInClick}
+                  fontWeight={600}
+                  color={"white"}
+                  bg={"#FF0080"}
+                  href={"#"}
+                  whileHover={{
+                    scale: 1.1,
+                    opacity: 0.8,
+                    backgroundColor: "#e00071",
+                  }}
+                  whileTap={{
+                    scale: 0.9,
+                  }}
+                >
+                  Sign In
+                </Button>
               </Flex>
             </VStack>
           </Container>
