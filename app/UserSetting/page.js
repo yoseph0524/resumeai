@@ -1,6 +1,6 @@
 "use client";
 // Chakra UI Imports ;
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex, IconButton } from "@chakra-ui/react";
 
 // Saas UI Imports ;
 import {
@@ -16,18 +16,21 @@ import {
 } from "@saas-ui/react";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "../Auth/AuthContext";
-import { auth } from "@/app/firebase";
+import { auth, db } from "@/app/firebase";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  onAuthStateChanged,
+  updatePassword,
+  updateEmail,
+  updateProfile,
+} from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 
-import { db } from "@/app/firebase";
-import { doc, getDoc } from "firebase/firestore";
-import { onAuthStateChanged, updatePassword } from "firebase/auth";
-
-export const UserSettings = () => {
+const UserSetting = () => {
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
-  const [walletAddress, setWalletAddress] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isMatch, setIsMatch] = useState(true);
@@ -35,6 +38,7 @@ export const UserSettings = () => {
   const [passwordChanged, setPasswordChanged] = useState(0);
 
   const [user, setUser] = useState(null);
+  const [formChanged, setFormChanged] = useState(false);
 
   const buttonStyles = {
     ...(isButtonEnabled
@@ -89,7 +93,6 @@ export const UserSettings = () => {
         setFirstName(data.first_name);
         setLastName(data.last_name);
         setEmail(user.email);
-        setWalletAddress(data.wallet_address);
       } else {
         console.log(user.uid + ": No such document!");
       }
@@ -109,40 +112,98 @@ export const UserSettings = () => {
     } else {
       setIsButtonEnabled(false);
     }
+
+    setFormChanged(true); // Mark form as changed
   };
 
   const handleConfirmPasswordChange = (e) => {
     setConfirmPassword(e.target.value);
     setIsMatch(e.target.value === password);
 
-    console.log(isValidPassword(e.target.value));
-
     if (e.target.value === password) {
       setIsButtonEnabled(isValidPassword(e.target.value));
     } else {
       setIsButtonEnabled(false);
     }
+
+    setFormChanged(true); // Mark form as changed
   };
 
-  const handleSubmit = async () => {
+  const handleFirstNameChange = (e) => {
+    setFirstName(e.target.value);
+    setFormChanged(true); // Mark form as changed
+    setIsButtonEnabled(true);
+  };
+
+  const handleLastNameChange = (e) => {
+    setLastName(e.target.value);
+    setFormChanged(true); // Mark form as changed
+    setIsButtonEnabled(true);
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    setFormChanged(true); // Mark form as changed
+    setIsButtonEnabled(true);
+  };
+
+  const handleSubmit = async (e) => {
     try {
-      await updatePassword(user, password);
-      setPassword("");
-      setConfirmPassword("");
-      setPasswordChanged(1);
+      if (password) {
+        await updatePassword(user, password);
+        setPassword("");
+        setConfirmPassword("");
+        setPasswordChanged(1);
+      }
+
+      if (firstName || lastName) {
+        await updateProfile(user, {
+          displayName: `${firstName} ${lastName}`,
+        });
+
+        const docRef = doc(db, "users", user.uid);
+        await updateDoc(docRef, {
+          first_name: firstName,
+          last_name: lastName,
+        });
+      }
+
+      if (email && email !== user.email) {
+        await updateEmail(user, email);
+      }
+
+      alert("Profile updated successfully");
+      setFormChanged(false); // Reset form changed status
     } catch (error) {
       setPasswordChanged(2);
+      console.error("Error updating profile:", error);
     }
+  };
+
+  const router = useRouter();
+
+  const handleBackClick = () => {
+    router.push("/Dashboard");
   };
 
   return (
     <>
+      <IconButton
+        icon={<ArrowBackIcon />}
+        aria-label="Back to Dashboard"
+        onClick={handleBackClick}
+        position="absolute"
+        top="16px"
+        left="16px"
+        backgroundColor="transparent"
+        _hover={{ backgroundColor: "gray.200" }}
+      />
       <Box padding="8">
         <Flex alignItems="start" marginBlock="4">
           <Persona>
-            <PersonaAvatar name={firstName + " " + lastName} marginRight={3} />
+            <PersonaAvatar name={`${firstName} ${lastName}`} marginRight={3} />
             <PersonaDetails>
-              <PersonaLabel>{firstName + " " + lastName}</PersonaLabel>
+              <PersonaLabel>{`${firstName} ${lastName}`}</PersonaLabel>
               <PersonaSecondaryLabel>Basic User</PersonaSecondaryLabel>
             </PersonaDetails>
           </Persona>
@@ -157,7 +218,7 @@ export const UserSettings = () => {
               label="First Name"
               value={firstName}
               width="20.5em"
-              cursor="not-allowed"
+              onChange={handleFirstNameChange}
             />
             <Field
               backgroundColor="#D3D3D3"
@@ -166,7 +227,7 @@ export const UserSettings = () => {
               label="Last Name"
               value={lastName}
               width="20.5em"
-              cursor="not-allowed"
+              onChange={handleLastNameChange}
             />
             <Field
               backgroundColor="#D3D3D3"
@@ -176,17 +237,7 @@ export const UserSettings = () => {
               value={email}
               type="email"
               width="20.5em"
-              cursor="not-allowed"
-            />
-            <Field
-              backgroundColor="#D3D3D3"
-              textColor="black"
-              name="wallet_address"
-              label="Wallet Address"
-              value={walletAddress}
-              type="password"
-              width="20.5em"
-              cursor="not-allowed"
+              onChange={handleEmailChange}
             />
             <Field
               fontFamily="mono"
@@ -194,10 +245,9 @@ export const UserSettings = () => {
               textColor="black"
               type="password"
               name="password"
-              label=" New Password"
+              label="New Password"
               value={password}
               width="18em"
-              rules={{ required: true }}
               onChange={handlePasswordChange}
             />
             <Field
@@ -209,7 +259,6 @@ export const UserSettings = () => {
               label="Confirm Password"
               value={confirmPassword}
               width="18em"
-              rules={{ required: true }}
               onChange={handleConfirmPasswordChange}
             />
             {!isMatch && <p className="highlight">Passwords do not match</p>}
@@ -217,23 +266,26 @@ export const UserSettings = () => {
               <div>
                 <p>Password must:</p>
                 <ul style={{ marginLeft: "25px" }}>
-                  <li>Be at least 8 character long</li>
-                  <li>Have 1 upper case letter</li>
-                  <li>Have 1 lpper case letter</li>
+                  <li>Be at least 8 characters long</li>
+                  <li>Have 1 uppercase letter</li>
+                  <li>Have 1 lowercase letter</li>
                   <li>Have 1 special symbol (!@#$%^&*)(+=._-)</li>
                 </ul>
               </div>
             )}
-
-            {passwordChanged == 1 && (
+            {passwordChanged === 1 && (
               <p style={{ color: "#4caf50" }}>Successfully changed password</p>
             )}
-            {passwordChanged == 2 && (
+            {passwordChanged === 2 && (
               <p style={{ color: "red" }}>
-                Error changing password, Trying logging out and logging back in
+                Error changing password, try logging out and logging back in
               </p>
             )}
-            <SubmitButton marginBlockStart="10px" style={buttonStyles}>
+            <SubmitButton
+              marginBlockStart="10px"
+              style={buttonStyles}
+              isDisabled={!formChanged}
+            >
               Save
             </SubmitButton>
           </FormLayout>
@@ -242,3 +294,5 @@ export const UserSettings = () => {
     </>
   );
 };
+
+export default UserSetting;

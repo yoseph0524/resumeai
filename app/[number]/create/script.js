@@ -33,7 +33,6 @@ const getData = async (index) => {
 
 export function getNumber() {
   const pathname = usePathname();
-  console.log(pathname);
   const segments = pathname.split("/");
   const number = segments[1];
   return number;

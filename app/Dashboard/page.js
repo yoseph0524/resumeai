@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import Nav from "../nav";
 import styled from "styled-components";
@@ -12,20 +12,24 @@ import { getNumber } from "../[number]/create/script";
 export default function Dashboard() {
   const [resumeDataList, setResumeDataList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [number, setNumber] = useState(null);
 
   const onsubmit = async () => {
     try {
       const user = auth.currentUser;
       if (user) {
         const userRef = collection(db, "users", user.uid, "resume_data");
-        await addDoc(userRef, fakeFinalData);
-        console.log("Resume data successfully added!");
+        const newDocId = `${number}`; // Example of generating a custom ID
+        const docRef = doc(userRef, newDocId);
+        console.log(docRef);
+        await setDoc(docRef, fakeFinalData);
+        console.log("Resume data successfully added with ID:", newDocId);
         fetchResumeData(); // Fetch the updated list after adding a new document
       } else {
         console.log("No user is signed in.");
       }
     } catch (error) {
-      console.error("Error adding document: ", error);
+      console.error("Error adding document:", error);
     }
   };
 
@@ -33,14 +37,13 @@ export default function Dashboard() {
     try {
       const user = auth.currentUser;
       if (user) {
-        console.log("2");
         const collectionRef = collection(db, "users", user.uid, "resume_data");
         const querySnapshot = await getDocs(collectionRef);
-        console.log("3");
         const resumes = querySnapshot.docs.map((doc) => doc.data());
 
         setResumeDataList(resumes);
         console.log(resumes);
+        setNumber(resumes.length);
       }
     } catch (error) {
       console.error("Error fetching documents: ", error);
@@ -61,7 +64,6 @@ export default function Dashboard() {
     return () => unsubscribe();
   }, []);
 
-  const number = getNumber();
   const router = useRouter();
   const handleAnalyzeClick = () => {
     router.push(`/${number + 1}/create`);
@@ -69,11 +71,12 @@ export default function Dashboard() {
 
   const handleCreateClick = () => {
     onsubmit();
-    router.push(`/${number + 1}/create`);
+    console.log(number);
+    router.push(`/${number}/create/personalInfo`);
   };
 
   const handleResumeClick = (index) => {
-    router.push(`/${index}/create`);
+    router.push(`/${index}/create/personalInfo`);
   };
 
   return (
@@ -129,6 +132,7 @@ const ResumeItem = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  height: 200px;
 `;
 
 const Button = styled.button`

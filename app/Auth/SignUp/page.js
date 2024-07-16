@@ -396,6 +396,7 @@ function SignUp() {
                     </List>
                   </Box>
                 </Collapse>
+                <Text>{errorMsg}</Text>
                 <Button
                   as={motion.button}
                   fontSize={"sm"}
