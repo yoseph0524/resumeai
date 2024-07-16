@@ -7,6 +7,7 @@ import { auth, db } from "../firebase";
 import Nav from "../nav";
 import styled from "styled-components";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getNumber } from "../[number]/create/script";
 
 export default function Dashboard() {
   const [resumeDataList, setResumeDataList] = useState([]);
@@ -32,9 +33,12 @@ export default function Dashboard() {
     try {
       const user = auth.currentUser;
       if (user) {
+        console.log("2");
         const collectionRef = collection(db, "users", user.uid, "resume_data");
         const querySnapshot = await getDocs(collectionRef);
+        console.log("3");
         const resumes = querySnapshot.docs.map((doc) => doc.data());
+
         setResumeDataList(resumes);
         console.log(resumes);
       }
@@ -48,6 +52,7 @@ export default function Dashboard() {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        console.log("1");
         await fetchResumeData();
       }
     });
@@ -56,19 +61,17 @@ export default function Dashboard() {
     return () => unsubscribe();
   }, []);
 
+  const number = getNumber();
   const router = useRouter();
   const handleAnalyzeClick = () => {
-    router.push("/analyze");
+    router.push(`/${number + 1}/create`);
   };
 
   const handleCreateClick = () => {
     onsubmit();
-    router.push("/create");
+    router.push(`/${number + 1}/create`);
   };
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
   const handleResumeClick = (index) => {
     router.push(`/${index}/create`);
   };
@@ -82,14 +85,21 @@ export default function Dashboard() {
             <Button onClick={handleAnalyzeClick}>Analyze</Button>
             <Button onClick={handleCreateClick}>Create</Button>
           </ResumeItem>
-          {resumeDataList
-            .slice()
-            .reverse()
-            .map((resume, index) => (
-              <ResumeItem onClick={() => handleResumeClick(index)} key={index}>
-                <p>{resume.personalInfo.name}</p>
-              </ResumeItem>
-            ))}
+          {loading ? (
+            <></>
+          ) : (
+            resumeDataList
+              .slice()
+              .reverse()
+              .map((resume, index) => (
+                <ResumeItem
+                  onClick={() => handleResumeClick(index)}
+                  key={index}
+                >
+                  <p>{resume.personalInfo.name}</p>
+                </ResumeItem>
+              ))
+          )}
         </ResumeList>
       </Container>
     </div>

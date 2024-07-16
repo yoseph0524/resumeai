@@ -4,6 +4,7 @@
 import { CacheProvider } from "@chakra-ui/next-js";
 import { AuthUserProvider } from "./Auth/AuthContext";
 import { ChakraProvider } from "@chakra-ui/react";
+import ProtectedRoute from "./Auth/ProtectedRoute";
 
 export default function RootLayout({ children }) {
   return (
