@@ -74,6 +74,7 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: auto;
 }
 
 .container {
@@ -81,7 +82,6 @@ h1 {
 }
 
 .container2 {
-  overflow-y: auto;
   height: 70vh;
 }
 
@@ -149,4 +149,8 @@ button:hover {
 
 h2 {
   margin-bottom: 0;
+}
+
+Link {
+  background-color: #005bb5;
 }

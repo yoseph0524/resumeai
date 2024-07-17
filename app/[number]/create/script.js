@@ -1,32 +1,35 @@
 import { auth, db } from "@/app/firebase";
-import { updateDoc, doc, getDocs, collection } from "firebase/firestore";
+import {
+  updateDoc,
+  doc,
+  getDocs,
+  collection,
+  getDoc,
+} from "firebase/firestore";
 import { usePathname } from "next/navigation";
 
-const getData = async (index) => {
+const getData = async (id) => {
   const user = auth.currentUser;
-  if (user) {
+
+  if (user && id) {
     try {
-      const collectionRef = collection(db, "users", user.uid, "resume_data");
-      const querySnapshot = await getDocs(collectionRef);
-      if (!querySnapshot.empty) {
-        if (index >= 0 && index < querySnapshot.docs.length) {
-          const myData = querySnapshot.docs[index].data(); // Use the index to get the correct document
-          console.log(myData);
-          return myData;
-        } else {
-          console.log("Index out of range.");
-          return null;
-        }
+      const docRef = doc(db, "users", user.uid, "resume_data", id);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const myData = docSnap.data();
+        console.log(myData);
+        return myData;
       } else {
-        console.log("No documents found in the collection.");
+        console.log("No such document.");
         return null;
       }
     } catch (error) {
-      console.error("Error getting documents:", error);
+      console.error("Error getting document:", error);
       return null;
     }
   } else {
-    console.log("No user is signed in.");
+    console.error("User is not signed in or ID is not provided.");
     return null;
   }
 };

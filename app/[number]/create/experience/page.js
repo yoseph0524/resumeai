@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/app/firebase"; // Adjust the import based on your project structure
 import getData, { getNumber } from "../script";
+import { buttonStyle, marginStyle, topStyle } from "../component";
 
 export default function Experience() {
   const [experience, setExperience] = useState([
@@ -114,14 +115,7 @@ export default function Experience() {
         const querySnapshot = await getDocs(collectionRef);
 
         if (!querySnapshot.empty) {
-          const targetDoc = querySnapshot.docs[number];
-          const docRef = doc(
-            db,
-            "users",
-            user.uid,
-            "resume_data",
-            targetDoc.id
-          );
+          const docRef = doc(collectionRef, number);
 
           // Update the document with the experience field
           await updateDoc(docRef, { experience });
@@ -143,7 +137,7 @@ export default function Experience() {
     <div>
       <Navbar activepath="/create/experience" />
       {loading ? (
-        <div>Loading...</div>
+        <div className="container">Loading...</div>
       ) : (
         <div style={{ display: "flex" }}>
           {experience.length > 0 && experience[0].position !== "" ? (
@@ -169,6 +163,7 @@ export default function Experience() {
                       {exp.position}
                     </label>
                     <button
+                      style={buttonStyle}
                       type="button"
                       className="button"
                       onClick={() => deleteExperience(index)}
@@ -262,20 +257,20 @@ export default function Experience() {
                         className="input"
                       ></input>
                       <button
+                        style={{ ...buttonStyle, ...topStyle }}
                         type="button"
                         className="button"
                         onClick={() => deleteDescription(expIndex, descIndex)}
-                        style={{ height: "45px", marginTop: "8px" }}
                       >
                         Delete
                       </button>
                     </div>
                   ))}
                   <button
+                    style={{ ...buttonStyle, ...marginStyle }}
                     type="button"
                     className="button"
                     onClick={() => addDescription(expIndex)}
-                    style={{ marginLeft: 0, marginBottom: "3rem" }}
                   >
                     Add Description
                   </button>
@@ -284,17 +279,18 @@ export default function Experience() {
               ))}
               <div className="buttonContainer">
                 <button
+                  style={buttonStyle}
                   type="button"
                   onClick={addExperience}
                   className="button"
                 >
                   Add Experience
                 </button>
-                <button type="submit" className="button">
+                <button style={buttonStyle} type="submit" className="button">
                   Save
                 </button>
                 <Link href={`/${number}/create/project`}>
-                  <button type="submit" className="button">
+                  <button style={buttonStyle} type="submit" className="button">
                     Next
                   </button>
                 </Link>

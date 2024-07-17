@@ -163,56 +163,6 @@ export default function analyze() {
                   fontSize={"sm"}
                   fontWeight={600}
                   color={"white"}
-                  onClick={handleAnalyzeClick}
-                  bg={"#FF0080"}
-                  href={"#"}
-                  whileHover={{
-                    scale: 1.1,
-                    backgroundColor: "#e00071",
-                  }}
-                  whileTap={{
-                    scale: 0.9,
-                  }}
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  Analyze
-                </Button>
-                <br />
-                <Button
-                  as={motion.button}
-                  fontSize={"sm"}
-                  fontWeight={600}
-                  color={"white"}
-                  onClick={handleCreateClick}
-                  bg={"#FF0080"}
-                  href={"#"}
-                  whileHover={{
-                    scale: 1.1,
-                    backgroundColor: "#e00071",
-                  }}
-                  whileTap={{
-                    scale: 0.9,
-                  }}
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  Create
-                </Button>
-              </Flex>
-              <Flex
-                justify="center"
-                align="center"
-                gap={4} // You can specify the gap size here
-                mt={4}
-              >
-                <Button
-                  as={motion.button}
-                  fontSize={"sm"}
-                  fontWeight={600}
-                  color={"white"}
                   bg={"#FF0080"}
                   href={"#"}
                   onClick={handleSignUpClick}

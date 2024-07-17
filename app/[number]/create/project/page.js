@@ -14,6 +14,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/app/firebase"; // Adjust the import based on your project structure
 import getData, { getNumber } from "../script";
+import { buttonStyle, marginStyle, topStyle } from "../component";
 
 export default function Project() {
   const [project, setProject] = useState([
@@ -122,14 +123,7 @@ export default function Project() {
         const querySnapshot = await getDocs(collectionRef);
 
         if (!querySnapshot.empty) {
-          const targetDoc = querySnapshot.docs[number];
-          const docRef = doc(
-            db,
-            "users",
-            user.uid,
-            "resume_data",
-            targetDoc.id
-          );
+          const docRef = doc(collectionRef, number);
 
           // Update the document with the project field
           await updateDoc(docRef, { project });
@@ -151,7 +145,7 @@ export default function Project() {
     <div>
       <Navbar activepath="/create/project" />
       {loading ? (
-        <div>Loading...</div>
+        <div className="container">Loading...</div>
       ) : (
         <div style={{ display: "flex" }}>
           {project.length > 0 && project[0].title !== "" ? (
@@ -177,6 +171,7 @@ export default function Project() {
                       {proj.title}
                     </label>
                     <button
+                      style={buttonStyle}
                       type="button"
                       className="button"
                       onClick={() => deleteProject(index)}
@@ -292,20 +287,20 @@ export default function Project() {
                         style={{ flex: 1, marginRight: "0.5rem" }}
                       />
                       <button
+                        style={{ ...buttonStyle, ...topStyle }}
                         type="button"
                         className="button"
                         onClick={() => deleteAccomplishment(index, descIndex)}
-                        style={{ height: "45px", marginTop: "8px" }}
                       >
                         Delete
                       </button>
                     </div>
                   ))}
                   <button
+                    style={{ ...buttonStyle, ...marginStyle }}
                     type="button"
                     className="button"
                     onClick={() => addAccomplishment(index)}
-                    style={{ marginLeft: 0, marginBottom: "3rem" }}
                   >
                     Add accomplishment
                   </button>
@@ -313,14 +308,19 @@ export default function Project() {
                 </div>
               ))}
               <div className="buttonContainer">
-                <button type="button" onClick={addProject} className="button">
+                <button
+                  style={buttonStyle}
+                  type="button"
+                  onClick={addProject}
+                  className="button"
+                >
                   Add Project
                 </button>
-                <button type="submit" className="button">
+                <button style={buttonStyle} type="submit" className="button">
                   Save
                 </button>
                 <Link href={`/${number}/create/education`}>
-                  <button type="submit" className="button">
+                  <button style={buttonStyle} type="submit" className="button">
                     Next
                   </button>
                 </Link>

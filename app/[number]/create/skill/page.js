@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/app/firebase"; // Adjust the import based on your project structure
 import getData, { getNumber } from "../script";
+import { buttonStyle, marginStyle, topStyle } from "../component";
 
 export default function Skill() {
   const [skill, setSkill] = useState([
@@ -96,14 +97,7 @@ export default function Skill() {
         const querySnapshot = await getDocs(collectionRef);
 
         if (!querySnapshot.empty) {
-          const targetDoc = querySnapshot.docs[number];
-          const docRef = doc(
-            db,
-            "users",
-            user.uid,
-            "resume_data",
-            targetDoc.id
-          );
+          const docRef = doc(collectionRef, number);
 
           // Update the document with the skill field
           await updateDoc(docRef, { skill });
@@ -125,7 +119,7 @@ export default function Skill() {
     <div>
       <Navbar activepath="/create/skill" />
       {loading ? (
-        <div>Loading...</div>
+        <div className="container">Loading...</div>
       ) : (
         <div style={{ display: "flex" }}>
           {skill.length > 0 && skill[0].type !== "" ? (
@@ -151,6 +145,7 @@ export default function Skill() {
                       {ski.type}
                     </label>
                     <button
+                      style={buttonStyle}
                       type="button"
                       className="button"
                       onClick={() => deleteSkill(index)}
@@ -193,20 +188,20 @@ export default function Skill() {
                         style={{ flex: 1, marginRight: "0.5rem" }}
                       />
                       <button
+                        style={{ ...buttonStyle, ...topStyle }}
                         type="button"
                         className="button"
                         onClick={() => deleteList(index, listIndex)}
-                        style={{ height: "45px", marginTop: "8px" }}
                       >
                         Delete
                       </button>
                     </div>
                   ))}
                   <button
+                    style={{ ...buttonStyle, ...marginStyle }}
                     type="button"
                     className="button"
                     onClick={() => addList(index)}
-                    style={{ marginLeft: 0, marginBottom: "3rem" }}
                   >
                     Add List Item
                   </button>
@@ -214,14 +209,19 @@ export default function Skill() {
                 </div>
               ))}
               <div className="buttonContainer">
-                <button type="button" onClick={addSkill} className="button">
+                <button
+                  style={buttonStyle}
+                  type="button"
+                  onClick={addSkill}
+                  className="button"
+                >
                   Add Skill
                 </button>
-                <button type="submit" className="button">
+                <button style={buttonStyle} type="submit" className="button">
                   Save
                 </button>
                 <Link href={`/${number}/create/summary`}>
-                  <button type="submit" className="button">
+                  <button style={buttonStyle} type="submit" className="button">
                     Next
                   </button>
                 </Link>

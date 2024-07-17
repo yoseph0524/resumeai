@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/app/firebase"; // Adjust the import based on your project structure
 import getData, { getNumber } from "../script";
+import { buttonStyle, marginStyle, topStyle } from "../component";
 
 export default function Coursework() {
   const [coursework, setCoursework] = useState([
@@ -105,16 +106,8 @@ export default function Coursework() {
         // Query to get the first document in the resume_data collection
         const collectionRef = collection(db, "users", user.uid, "resume_data");
         const querySnapshot = await getDocs(collectionRef);
-
         if (!querySnapshot.empty) {
-          const targetDoc = querySnapshot.docs[number];
-          const docRef = doc(
-            db,
-            "users",
-            user.uid,
-            "resume_data",
-            targetDoc.id
-          );
+          const docRef = doc(collectionRef, number);
 
           // Update the document with the coursework field
           await updateDoc(docRef, { coursework });
@@ -136,7 +129,7 @@ export default function Coursework() {
     <div>
       <Navbar activepath="/create/coursework" />{" "}
       {loading ? (
-        <div>Loading...</div>
+        <div className="container">Loading...</div>
       ) : (
         <div style={{ display: "flex" }}>
           {coursework.length > 0 && coursework[0].title !== "" ? (
@@ -162,6 +155,7 @@ export default function Coursework() {
                       {course.title}
                     </label>
                     <button
+                      style={buttonStyle}
                       type="button"
                       className="button"
                       onClick={() => deleteCoursework(index)}
@@ -230,20 +224,20 @@ export default function Coursework() {
                         style={{ flex: 1, marginRight: "0.5rem" }}
                       />
                       <button
+                        style={{ ...buttonStyle, ...topStyle }}
                         type="button"
                         className="button"
                         onClick={() => deleteDescription(index, descIndex)}
-                        style={{ height: "45px", marginTop: "8px" }}
                       >
                         Delete
                       </button>
                     </div>
                   ))}
                   <button
+                    style={{ ...buttonStyle, ...marginStyle }}
                     type="button"
                     className="button"
                     onClick={() => addDescription(index)}
-                    style={{ marginLeft: 0, marginBottom: "3rem" }}
                   >
                     Add Description
                   </button>
@@ -251,14 +245,19 @@ export default function Coursework() {
                 </div>
               ))}
               <div className="buttonContainer">
-                <button type="button" onClick={addCourse} className="button">
+                <button
+                  style={buttonStyle}
+                  type="button"
+                  onClick={addCourse}
+                  className="button"
+                >
                   Add Course
                 </button>
-                <button type="submit" className="button">
+                <button style={buttonStyle} type="submit" className="button">
                   Save
                 </button>
                 <Link href={`/${number}/create/skill`}>
-                  <button type="submit" className="button">
+                  <button style={buttonStyle} type="submit" className="button">
                     Next
                   </button>
                 </Link>
@@ -270,3 +269,12 @@ export default function Coursework() {
     </div>
   );
 }
+
+/**
+ * 
+import { buttonStyle, marginStyle, topStyle } from "../component";
+
+style={{ ...buttonStyle, ...topStyle }}
+style={{ ...buttonStyle, ...marginStyle }}
+style={buttonStyle}
+ */

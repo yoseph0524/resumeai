@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/app/firebase"; // Adjust the import based on your project structure
 import getData, { getNumber } from "../script";
+import { buttonStyle, marginStyle, topStyle } from "../component";
 
 export default function Summary() {
   const [summary, setSummary] = useState("");
@@ -51,14 +52,7 @@ export default function Summary() {
         const querySnapshot = await getDocs(collectionRef);
 
         if (!querySnapshot.empty) {
-          const targetDoc = querySnapshot.docs[number];
-          const docRef = doc(
-            db,
-            "users",
-            user.uid,
-            "resume_data",
-            targetDoc.id
-          );
+          const docRef = doc(collectionRef, number);
 
           // Update the document with the summary field
           await updateDoc(docRef, { summary });
@@ -80,7 +74,7 @@ export default function Summary() {
     <div>
       <Navbar activepath="/create/summary" />
       {loading ? (
-        <div>Loading...</div>
+        <div className="container">Loading...</div>
       ) : (
         <div className="container2">
           <form onSubmit={handleSubmit}>
@@ -94,9 +88,13 @@ export default function Summary() {
             ></textarea>
 
             <div className="buttonContainer">
-              <button type="submit">Save</button>
+              <button style={buttonStyle} type="submit">
+                Save
+              </button>
               <Link href={`/${number}/create/review`}>
-                <button type="button">Next</button>
+                <button style={buttonStyle} type="button">
+                  Next
+                </button>
               </Link>
             </div>
           </form>

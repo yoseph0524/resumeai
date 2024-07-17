@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "../nav";
 import { CreateCoverLetter } from "./script";
-import { Required, RequiredText } from "../component";
+import { Required, RequiredText, buttonStyle } from "../component";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import {
   collection,
@@ -56,17 +56,8 @@ export default function Coverletter() {
             user.uid,
             "resume_data"
           );
-          const q = query(collectionRef, limit(1));
-          const querySnapshot = await getDocs(q);
 
-          const targetDoc = querySnapshot.docs[number];
-          const docRef = doc(
-            db,
-            "users",
-            user.uid,
-            "resume_data",
-            targetDoc.id
-          );
+          const docRef = doc(collectionRef, number);
 
           const docSnap = await getDoc(docRef);
 
@@ -186,11 +177,8 @@ export default function Coverletter() {
     if (user) {
       try {
         const collectionRef = collection(db, "users", user.uid, "resume_data");
-        const q = query(collectionRef, limit(1));
-        const querySnapshot = await getDocs(q);
 
-        const targetDoc = querySnapshot.docs[number];
-        const docRef = doc(db, "users", user.uid, "resume_data", targetDoc.id);
+        const docRef = doc(collectionRef, number);
 
         await updateDoc(docRef, { coverletterInfo });
         alert("Saved!");
@@ -222,7 +210,9 @@ export default function Coverletter() {
     <div>
       <Navbar activepath="/create/coverletter" />
       <div className="container2">
-        <button onClick={makeCoverletter}>Create Coverletter</button>
+        <button style={buttonStyle} onClick={makeCoverletter}>
+          Create Coverletter
+        </button>
         {loading && <p>Loading...</p>}
         <form className="form" id="coverletterInfoForm" onSubmit={handleSubmit}>
           <label className="label">Desired Job:</label>
@@ -365,7 +355,7 @@ export default function Coverletter() {
 
           <div className="buttonContainer">
             <RequiredText />
-            <button type="submit" className="button">
+            <button style={buttonStyle} type="submit" className="button">
               Save
             </button>
           </div>

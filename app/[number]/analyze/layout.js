@@ -1,10 +1,7 @@
 "use client";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import "./layout.css";
-import Nav from "../../nav";
 import styled from "styled-components";
 import React from "react";
+import Nav from "@/app/nav";
 
 const Layout = ({ children }) => {
   return (
@@ -19,7 +16,7 @@ export default Layout;
 
 const Container = styled.div`
   display: grid;
-  grid-template-columns: 120px 1fr;
+  grid-template-columns: 200px 1fr;
   height: 100vh;
 `;
 

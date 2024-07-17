@@ -48,6 +48,7 @@ const NavContainer = styled.div`
   padding: 20px;
   background-color: #f0f0f0;
   border-right: 1px solid #ccc;
+  width: 120px;
 `;
 
 const NavSection = styled.div`
@@ -57,8 +58,8 @@ const NavSection = styled.div`
 
 const NavButton = styled.button`
   margin: 10px 0;
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 10px 0px;
+  font-size: 12px;
   color: white;
   background-color: #0070f3;
   border: none;

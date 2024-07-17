@@ -422,13 +422,13 @@ export default function Home() {
             </button>
           </div>
           <div className="div">
-            <button id="uploadButton" onClick={uploadFile}>
+            <button className="custom-file-upload" onClick={uploadFile}>
               Upload
             </button>
           </div>
           <div className="div">
             <button
-              className="button"
+              className="custom-file-upload"
               ref={analyzeButtonRef}
               onClick={handleAnalyzeClick}
             >
@@ -437,7 +437,7 @@ export default function Home() {
           </div>
           <div className="div">
             <button
-              className="button"
+              className="custom-file-upload"
               ref={createButtonRef}
               onClick={handleCreateClick}
             >

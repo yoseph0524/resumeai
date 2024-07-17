@@ -38,16 +38,7 @@ export default function Download() {
             user.uid,
             "resume_data"
           );
-          const querySnapshot = await getDocs(collectionRef);
-
-          const targetDoc = querySnapshot.docs[number];
-          const docRef = doc(
-            db,
-            "users",
-            user.uid,
-            "resume_data",
-            targetDoc.id
-          );
+          const docRef = doc(collectionRef, number);
 
           const docSnap = await getDoc(docRef);
 
@@ -127,7 +118,7 @@ export default function Download() {
     <div>
       <Navbar activepath="/create/download" />
       {loading ? (
-        <div>Loading...</div>
+        <div className="container">Loading...</div>
       ) : (
         <div>
           <div className="message">

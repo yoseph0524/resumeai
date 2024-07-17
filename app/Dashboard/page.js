@@ -2,19 +2,34 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { auth, db } from "../firebase";
 import Nav from "../nav";
 import styled from "styled-components";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getNumber } from "../[number]/create/script";
+import { useDisclosure } from "@chakra-ui/react";
+import FileUploadModal from "../[number]/create/modal";
 
 export default function Dashboard() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const router = useRouter();
   const [resumeDataList, setResumeDataList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [number, setNumber] = useState(null);
+  const [type, setType] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [title, setTitle] = useState("");
 
-  const onsubmit = async () => {
+  const onsubmit = async (data, titleName = title) => {
     try {
       const user = auth.currentUser;
       if (user) {
@@ -22,7 +37,9 @@ export default function Dashboard() {
         const newDocId = `${number}`; // Example of generating a custom ID
         const docRef = doc(userRef, newDocId);
         console.log(docRef);
-        await setDoc(docRef, fakeFinalData);
+        await setDoc(docRef, data);
+        console.log(titleName);
+        await updateDoc(docRef, { title: { name: titleName, number: number } });
         console.log("Resume data successfully added with ID:", newDocId);
         fetchResumeData(); // Fetch the updated list after adding a new document
       } else {
@@ -30,6 +47,7 @@ export default function Dashboard() {
       }
     } catch (error) {
       console.error("Error adding document:", error);
+      onClose();
     }
   };
 
@@ -39,11 +57,10 @@ export default function Dashboard() {
       if (user) {
         const collectionRef = collection(db, "users", user.uid, "resume_data");
         const querySnapshot = await getDocs(collectionRef);
-        const resumes = querySnapshot.docs.map((doc) => doc.data());
 
+        const resumes = querySnapshot.docs.map((doc) => doc.data());
         setResumeDataList(resumes);
         console.log(resumes);
-        setNumber(resumes.length);
       }
     } catch (error) {
       console.error("Error fetching documents: ", error);
@@ -52,31 +69,112 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    setNumber(Date.now());
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        console.log("1");
         await fetchResumeData();
       }
     });
-
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
 
-  const router = useRouter();
-  const handleAnalyzeClick = () => {
-    router.push(`/${number + 1}/create`);
+  const handleResumeClick = (index) => {
+    router.push(`/${index}/create/personalInfo`);
   };
 
   const handleCreateClick = () => {
-    onsubmit();
-    console.log(number);
+    setType("create");
+    onOpen();
+  };
+
+  const changeTitle = (e) => {
+    console.log(e.target.value);
+    setTitle(e.target.value);
+  };
+
+  const makeTitle = () => {
+    console.log(title);
+    onsubmit(fakeFinalData, title);
+    onClose();
     router.push(`/${number}/create/personalInfo`);
   };
 
-  const handleResumeClick = (index) => {
-    router.push(`/${index}/create/personalInfo`);
+  const handleAnalyzeClick = () => {
+    setType("analyze");
+    console.log("yes");
+    onOpen();
+  };
+
+  const handleFileSelect = (file) => {
+    setSelectedFile(file);
+    console.log(file);
+  };
+
+  const handleModalClose = () => {
+    if (selectedFile) {
+      setUploading(true);
+      uploadFile(selectedFile);
+    } else {
+      onClose();
+    }
+  };
+
+  const uploadFile = async (file) => {
+    if (!file) {
+      alert("Please select a file.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const result = await response.json();
+
+      console.log(result);
+      let text = result.text.replace(/[^ -~\n\r\t]+/g, "");
+      uploadResume(text.replace(/"/g, ""));
+      console.log(text);
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred while uploading the file.");
+    }
+  };
+
+  const uploadResume = async (text) => {
+    try {
+      const response = await fetch(
+        "https://fnhlgmlpxaugxpvyayrx2em44i0trwsq.lambda-url.us-east-1.on.aws/resumeai",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userMessages: [text],
+          }),
+        }
+      );
+      const data = await response.json();
+      onsubmit(JSON.parse(data.assistant));
+      setUploading(false);
+      onClose();
+    } catch (error) {
+      console.error("Error sending message:", error);
+      alert(
+        "An error occurred. Please try again. It is most likely that your file is not a resume or in PDF format."
+      );
+      onClose();
+    }
   };
 
   return (
@@ -87,6 +185,15 @@ export default function Dashboard() {
           <ResumeItem>
             <Button onClick={handleAnalyzeClick}>Analyze</Button>
             <Button onClick={handleCreateClick}>Create</Button>
+            <FileUploadModal
+              isOpen={isOpen}
+              onClose={handleModalClose}
+              makeTitle={makeTitle}
+              changeTitle={changeTitle}
+              onFileSelect={handleFileSelect}
+              uploading={uploading}
+              type={type}
+            />
           </ResumeItem>
           {loading ? (
             <></>
@@ -96,10 +203,10 @@ export default function Dashboard() {
               .reverse()
               .map((resume, index) => (
                 <ResumeItem
-                  onClick={() => handleResumeClick(index)}
+                  onClick={() => handleResumeClick(resume.title.number)}
                   key={index}
                 >
-                  <p>{resume.personalInfo.name}</p>
+                  <p>{resume.title.name}</p>
                 </ResumeItem>
               ))
           )}
@@ -157,7 +264,7 @@ const Button = styled.button`
 
 const fakeFinalData = {
   personalInfo: {
-    name: "John Doe",
+    name: "",
     email: "",
     phone: "",
     url: "",

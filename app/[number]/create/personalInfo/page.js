@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/app/firebase"; // Adjust the import based on your project structure
 import Nav from "@/app/nav";
+import { buttonStyle, marginStyle, topStyle } from "../component";
 
 export default function PersonalInfo() {
   const [personalInfo, setPersonalInfo] = useState({
@@ -53,27 +54,15 @@ export default function PersonalInfo() {
     e.preventDefault();
     const auth = getAuth();
     const user = auth.currentUser;
-
     if (user) {
       try {
         const collectionRef = collection(db, "users", user.uid, "resume_data");
         const querySnapshot = await getDocs(collectionRef);
-
         if (!querySnapshot.empty) {
-          if (number >= 0 && number < querySnapshot.docs.length) {
-            const targetDoc = querySnapshot.docs[number];
-            console.log(targetDoc.id);
-            const docRef = doc(
-              db,
-              "users",
-              user.uid,
-              "resume_data",
-              targetDoc.id
-            );
-            await updateDoc(docRef, { personalInfo });
-            console.log("Document updated successfully:", personalInfo);
-            alert("Saved!");
-          }
+          const docRef = doc(collectionRef, number);
+          await updateDoc(docRef, { personalInfo });
+          console.log("Document updated successfully:", personalInfo);
+          alert("Saved!");
         } else {
           console.log("No documents found in the collection.");
         }
@@ -90,7 +79,7 @@ export default function PersonalInfo() {
     <div>
       <Navbar activepath="/create/personalInfo" />{" "}
       {loading ? (
-        <div>Loading...</div>
+        <div className="container">Loading...</div>
       ) : (
         <div className="container2">
           <form className="form" id="personalInfoForm" onSubmit={handleSubmit}>
@@ -157,11 +146,12 @@ export default function PersonalInfo() {
 
             <div className="buttonContainer">
               <RequiredText />
-              <button type="submit" className="button">
+              <button style={buttonStyle} type="submit" className="button">
                 Save
               </button>
               <Link href={`/${number}/create/experience`}>
                 <button
+                  style={buttonStyle}
                   type="button" // Use type="button" to prevent form submission
                   className="button"
                   onClick={() => console.log(personalInfo)}

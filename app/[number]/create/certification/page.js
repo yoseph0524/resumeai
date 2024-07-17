@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/app/firebase"; // Adjust the import based on your project structure
 import getData, { getNumber } from "../script";
+import { buttonStyle, marginStyle, topStyle } from "../component";
 
 export default function Certification() {
   const [certification, setCertification] = useState([
@@ -104,16 +105,8 @@ export default function Certification() {
         // Query to get the first document in the resume_data collection
         const collectionRef = collection(db, "users", user.uid, "resume_data");
         const querySnapshot = await getDocs(collectionRef);
-
         if (!querySnapshot.empty) {
-          const targetDoc = querySnapshot.docs[number];
-          const docRef = doc(
-            db,
-            "users",
-            user.uid,
-            "resume_data",
-            targetDoc.id
-          );
+          const docRef = doc(collectionRef, number);
 
           // Update the document with the certification field
           await updateDoc(docRef, { certification });
@@ -139,7 +132,7 @@ export default function Certification() {
     <div>
       <Navbar activepath="/create/certification" />{" "}
       {loading ? (
-        <div>Loading...</div>
+        <div className="container">Loading...</div>
       ) : (
         <div style={{ display: "flex" }}>
           {certification.length > 0 && certification[0].name !== "" ? (
@@ -165,6 +158,7 @@ export default function Certification() {
                       {cert.name}
                     </label>
                     <button
+                      style={buttonStyle}
                       type="button"
                       className="button"
                       onClick={() => deleteCertification(index)}
@@ -227,20 +221,20 @@ export default function Certification() {
                         style={{ flex: 1, marginRight: "0.5rem" }}
                       />
                       <button
+                        style={{ ...buttonStyle, ...topStyle }}
                         type="button"
                         className="button"
                         onClick={() => deleteRelevant(index, relevantIndex)}
-                        style={{ height: "45px", marginTop: "8px" }}
                       >
                         Delete
                       </button>
                     </div>
                   ))}
                   <button
+                    style={{ ...buttonStyle, ...marginStyle }}
                     type="button"
                     className="button"
                     onClick={() => addRelevant(index)}
-                    style={{ marginLeft: 0, marginBottom: "3rem" }}
                   >
                     Add Relevant
                   </button>
@@ -249,17 +243,18 @@ export default function Certification() {
               ))}
               <div className="buttonContainer">
                 <button
+                  style={buttonStyle}
                   type="button"
                   onClick={addCertification}
                   className="button"
                 >
                   Add Certification
                 </button>
-                <button type="submit" className="button">
+                <button style={buttonStyle} type="submit" className="button">
                   Save
                 </button>
                 <Link href={`/${number}/create/coursework`}>
-                  <button type="submit" className="button">
+                  <button style={buttonStyle} type="submit" className="button">
                     Next
                   </button>
                 </Link>
