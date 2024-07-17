@@ -269,12 +269,3 @@ export default function Coursework() {
     </div>
   );
 }
-
-/**
- * 
-import { buttonStyle, marginStyle, topStyle } from "../component";
-
-style={{ ...buttonStyle, ...topStyle }}
-style={{ ...buttonStyle, ...marginStyle }}
-style={buttonStyle}
- */

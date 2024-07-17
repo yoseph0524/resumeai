@@ -32,7 +32,7 @@ const FileUploadModal = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalCloseButton />
+        <ModalCloseButton style={{ backgroundColor: "lightblue" }} />
         <ModalBody>
           <div>
             <label>Title:</label>

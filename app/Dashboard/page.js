@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDocs,
   setDoc,
@@ -14,9 +15,10 @@ import { auth, db } from "../firebase";
 import Nav from "../nav";
 import styled from "styled-components";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getNumber } from "../[number]/create/script";
 import { useDisclosure } from "@chakra-ui/react";
 import FileUploadModal from "../[number]/create/modal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
 
 export default function Dashboard() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -177,6 +179,45 @@ export default function Dashboard() {
     }
   };
 
+  const handleEdit = async (number) => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const docRef = doc(db, "users", user.uid, "resume_data", resumeNumber);
+        await deleteDoc(docRef);
+        console.log("Resume data successfully deleted with ID:", resumeNumber);
+        fetchResumeData(); // Fetch the updated list after deleting a document
+      } else {
+        console.log("No user is signed in.");
+      }
+    } catch (error) {
+      console.error("Error deleting document:", error);
+    }
+  };
+
+  const handleDelete = async (resumeNumber) => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const docRef = doc(
+          db,
+          "users",
+          user.uid,
+          "resume_data",
+          String(resumeNumber)
+        );
+        console.log(docRef);
+        await deleteDoc(docRef);
+        console.log("Resume data successfully deleted with ID:", resumeNumber);
+        fetchResumeData(); // Fetch the updated list after deleting a document
+      } else {
+        console.log("No user is signed in.");
+      }
+    } catch (error) {
+      console.error("Error deleting document:", error);
+    }
+  };
+
   return (
     <div style={{ display: "flex" }}>
       <Nav />
@@ -202,11 +243,19 @@ export default function Dashboard() {
               .slice()
               .reverse()
               .map((resume, index) => (
-                <ResumeItem
-                  onClick={() => handleResumeClick(resume.title.number)}
-                  key={index}
-                >
-                  <p>{resume.title.name}</p>
+                <ResumeItem key={index}>
+                  <Button
+                    onClick={() => handleResumeClick(resume.title.number)}
+                  >
+                    {resume.title.name}
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      handleDelete(resume.title.number);
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faTrash} className="icon" />
+                  </Button>
                 </ResumeItem>
               ))
           )}
