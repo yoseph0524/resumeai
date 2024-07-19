@@ -81,6 +81,19 @@ export default function Dashboard() {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    // Dynamically load the pdf.js script
+    const script = document.createElement("script");
+    script.src =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js";
+    script.onload = () => {
+      window.pdfjsLib = window.pdfjsLib || window["pdfjs-dist/build/pdf"];
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js";
+    };
+    document.body.appendChild(script);
+  }, []);
+
   const handleResumeClick = (index) => {
     router.push(`/${index}/create/personalInfo`);
   };
@@ -122,38 +135,42 @@ export default function Dashboard() {
     }
   };
 
-  const uploadFile = async (file) => {
-    if (!file) {
-      alert("Please select a file.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
+  const uploadFile = async (pdfFile) => {
+    if (!pdfFile) return;
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const arrayBuffer = await pdfFile.arrayBuffer();
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      // Load PDF with pdf.js
+      const loadingTask = window.pdfjsLib.getDocument({ data: arrayBuffer });
+      const pdf = await loadingTask.promise;
+
+      let text = "";
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        textContent.items.forEach((item) => {
+          text += item.str + " ";
+        });
       }
-      const result = await response.json();
 
-      console.log(result);
-      let text = result.text.replace(/[^ -~\n\r\t]+/g, "");
-      uploadResume(text.replace(/"/g, ""));
-      console.log(text);
+      // Clean up the text
+      const cleanedText = text.replace(/[^ -~\n\r\t]+/g, "").replace(/"/g, "");
+
+      console.log(cleanedText);
+
+      // Upload resume function (dummy function, replace with your actual upload function)
+      uploadResume(cleanedText);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error extracting text from PDF:", error);
       alert("An error occurred while uploading the file.");
     }
   };
 
   const uploadResume = async (text) => {
     try {
+      console.log(text);
       const response = await fetch(
         "https://fnhlgmlpxaugxpvyayrx2em44i0trwsq.lambda-url.us-east-1.on.aws/resumeai",
         {
@@ -176,22 +193,6 @@ export default function Dashboard() {
         "An error occurred. Please try again. It is most likely that your file is not a resume or in PDF format."
       );
       onClose();
-    }
-  };
-
-  const handleEdit = async (number) => {
-    try {
-      const user = auth.currentUser;
-      if (user) {
-        const docRef = doc(db, "users", user.uid, "resume_data", resumeNumber);
-        await deleteDoc(docRef);
-        console.log("Resume data successfully deleted with ID:", resumeNumber);
-        fetchResumeData(); // Fetch the updated list after deleting a document
-      } else {
-        console.log("No user is signed in.");
-      }
-    } catch (error) {
-      console.error("Error deleting document:", error);
     }
   };
 
