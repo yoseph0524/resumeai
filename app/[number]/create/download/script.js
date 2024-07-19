@@ -370,8 +370,11 @@ export const CreateResume = ({ resumeData }) => {
         let list = skill.list.filter((item) => item.trim() !== "").join(", ");
         if (list.trim() !== "") {
           let skillLine = `${skill.type}: ${list}`;
-          doc.text(skillLine, leftMargin, yOffset);
-          yOffset += 0.5;
+          const extraTextLines = doc.splitTextToSize(skillLine, 19);
+          extraTextLines.forEach((line) => {
+            doc.text(line, leftMargin, yOffset);
+            yOffset += 0.5;
+          });
         }
       }
     });
