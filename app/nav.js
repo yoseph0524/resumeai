@@ -24,6 +24,19 @@ export default function Nav() {
     router.push("/Auth/SignIn");
   };
 
+  useEffect(() => {
+    // Dynamically load the pdf.js script
+    const script = document.createElement("script");
+    script.src =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js";
+    script.onload = () => {
+      window.pdfjsLib = window.pdfjsLib || window["pdfjs-dist/build/pdf"];
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js";
+    };
+    document.body.appendChild(script);
+  }, []);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [number, setNumber] = useState(null);
   const [type, setType] = useState("");
