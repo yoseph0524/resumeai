@@ -114,33 +114,35 @@ export default function Nav() {
       onClose();
     }
   };
-
-  const uploadFile = async (file) => {
-    if (!file) {
-      alert("Please select a file.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
+  const uploadFile = async (pdfFile) => {
+    if (!pdfFile) return;
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const arrayBuffer = await pdfFile.arrayBuffer();
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      // Load PDF with pdf.js
+      const loadingTask = window.pdfjsLib.getDocument({ data: arrayBuffer });
+      const pdf = await loadingTask.promise;
+
+      let text = "";
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        textContent.items.forEach((item) => {
+          text += item.str + " ";
+        });
       }
-      const result = await response.json();
 
-      console.log(result);
-      let text = result.text.replace(/[^ -~\n\r\t]+/g, "");
-      uploadResume(text.replace(/"/g, ""));
-      console.log(text);
+      // Clean up the text
+      const cleanedText = text.replace(/[^ -~\n\r\t]+/g, "").replace(/"/g, "");
+
+      console.log(cleanedText);
+
+      // Upload resume function (dummy function, replace with your actual upload function)
+      uploadResume(cleanedText);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error extracting text from PDF:", error);
       alert("An error occurred while uploading the file.");
     }
   };
