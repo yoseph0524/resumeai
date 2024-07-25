@@ -44,6 +44,7 @@ export default function Dashboard() {
         await updateDoc(docRef, { title: { name: titleName, number: number } });
         console.log("Resume data successfully added with ID:", newDocId);
         fetchResumeData(); // Fetch the updated list after adding a new document
+        router.push(`/${number}/create/personalInfo`);
       } else {
         console.log("No user is signed in.");
       }
@@ -131,7 +132,6 @@ export default function Dashboard() {
     if (selectedFile) {
       setUploading(true);
       uploadFile(selectedFile);
-      router.push(`/${number}/create/personalInfo`);
     } else {
       onClose();
     }

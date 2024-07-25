@@ -209,16 +209,16 @@ export default function Nav() {
         >
           <Logo />
         </LogoButton>
-        <Tooltip label="Analyze" fontSize="md">
-          <Box
-            as="button"
-            onClick={handleAnalyzeClick}
-            className="icon-button"
-            style={{ fontSize: "2rem", margin: "10px 0px" }}
-          >
-            <FontAwesomeIcon icon={faChartBar} className="icon" />
-          </Box>
-        </Tooltip>
+        <LogoButton onClick={handleAnalyzeClick}>
+          <Tooltip label="Analyze" fontSize="md">
+            <Box
+              className="icon-button"
+              style={{ fontSize: "2rem", margin: "10px 0px" }}
+            >
+              <FontAwesomeIcon icon={faChartBar} className="icon" />
+            </Box>
+          </Tooltip>
+        </LogoButton>
         <Tooltip label="Create" fontSize="md">
           <Box
             as="button"
