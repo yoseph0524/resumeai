@@ -219,16 +219,16 @@ export default function Nav() {
             </Box>
           </Tooltip>
         </LogoButton>
-        <Tooltip label="Create" fontSize="md">
-          <Box
-            as="button"
-            onClick={handleCreateClick}
-            className="icon-button"
-            style={{ fontSize: "2rem", margin: "10px 0px" }}
-          >
-            <FontAwesomeIcon icon={faPlusCircle} className="icon" />
-          </Box>
-        </Tooltip>
+        <LogoButton onClick={handleCreateClick}>
+          <Tooltip label="Create" fontSize="md">
+            <Box
+              className="icon-button"
+              style={{ fontSize: "2rem", margin: "10px 0px" }}
+            >
+              <FontAwesomeIcon icon={faPlusCircle} className="icon" />
+            </Box>
+          </Tooltip>
+        </LogoButton>
         <FileUploadModal
           isOpen={isOpen}
           onClose={handleModalClose}
@@ -240,28 +240,30 @@ export default function Nav() {
         />
       </NavSection>
       <NavSection>
-        <Tooltip label="User Setting" fontSize="md">
-          <Box
-            as="button"
-            onClick={() => {
-              router.push("/UserSetting");
-            }}
-            className="icon-button"
-            style={{ fontSize: "2rem", margin: "10px 0px" }}
-          >
-            <FontAwesomeIcon icon={faUserCog} className="icon" />
-          </Box>
-        </Tooltip>
-        <Tooltip label="Log Out" fontSize="md">
-          <Box
-            as="button"
-            onClick={handleLogout}
-            className="icon-button"
-            style={{ fontSize: "2rem", margin: "10px 0px" }}
-          >
-            <FontAwesomeIcon icon={faSignOutAlt} className="icon" />
-          </Box>
-        </Tooltip>
+        <LogoButton
+          onClick={() => {
+            router.push("/UserSetting");
+          }}
+        >
+          <Tooltip label="User Setting" fontSize="md">
+            <Box
+              className="icon-button"
+              style={{ fontSize: "2rem", margin: "10px 0px" }}
+            >
+              <FontAwesomeIcon icon={faUserCog} className="icon" />
+            </Box>
+          </Tooltip>
+        </LogoButton>
+        <LogoButton onClick={handleLogout}>
+          <Tooltip label="Log Out" fontSize="md">
+            <Box
+              className="icon-button"
+              style={{ fontSize: "2rem", margin: "10px 0px" }}
+            >
+              <FontAwesomeIcon icon={faSignOutAlt} className="icon" />
+            </Box>
+          </Tooltip>
+        </LogoButton>
       </NavSection>
     </NavContainer>
   );
