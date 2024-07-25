@@ -209,7 +209,10 @@ export default function Nav() {
         >
           <Logo />
         </LogoButton>
-        <LogoButton onClick={handleAnalyzeClick}>
+        <LogoButton
+          onClick={handleAnalyzeClick}
+          style={{ backgroundColor: "transparent" }}
+        >
           <Tooltip label="Analyze" fontSize="md">
             <Box
               className="icon-button"
@@ -219,7 +222,10 @@ export default function Nav() {
             </Box>
           </Tooltip>
         </LogoButton>
-        <LogoButton onClick={handleCreateClick}>
+        <LogoButton
+          onClick={handleCreateClick}
+          style={{ backgroundColor: "transparent" }}
+        >
           <Tooltip label="Create" fontSize="md">
             <Box
               className="icon-button"
@@ -244,6 +250,7 @@ export default function Nav() {
           onClick={() => {
             router.push("/UserSetting");
           }}
+          style={{ backgroundColor: "transparent" }}
         >
           <Tooltip label="User Setting" fontSize="md">
             <Box
@@ -254,7 +261,10 @@ export default function Nav() {
             </Box>
           </Tooltip>
         </LogoButton>
-        <LogoButton onClick={handleLogout}>
+        <LogoButton
+          onClick={handleLogout}
+          style={{ backgroundColor: "transparent" }}
+        >
           <Tooltip label="Log Out" fontSize="md">
             <Box
               className="icon-button"
