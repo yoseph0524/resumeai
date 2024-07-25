@@ -254,7 +254,7 @@ export default function Nav() {
             </Box>
           </Tooltip>
         </LogoButton>
-        <LogoButton onClick={handleLogout} style={{ backgroundColor: "none" }}>
+        <LogoButton onClick={handleLogout}>
           <Tooltip label="Log Out" fontSize="md">
             <Box
               className="icon-button"
