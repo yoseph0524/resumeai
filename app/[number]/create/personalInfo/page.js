@@ -154,7 +154,7 @@ export default function PersonalInfo() {
                   style={buttonStyle}
                   type="submit" // Use type="button" to prevent form submission
                   className="button"
-                  onClick={() => console.log(personalInfo)}
+                  onClick={handleSubmit}
                 >
                   Next
                 </button>
