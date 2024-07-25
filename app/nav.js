@@ -254,11 +254,14 @@ export default function Nav() {
             </Box>
           </Tooltip>
         </LogoButton>
-        <LogoButton onClick={handleLogout}>
+        <LogoButton onClick={handleLogout} style={{ backgroundColor: "none" }}>
           <Tooltip label="Log Out" fontSize="md">
             <Box
               className="icon-button"
-              style={{ fontSize: "2rem", margin: "10px 0px" }}
+              style={{
+                fontSize: "2rem",
+                margin: "10px 0px",
+              }}
             >
               <FontAwesomeIcon icon={faSignOutAlt} className="icon" />
             </Box>
@@ -285,20 +288,6 @@ const NavSection = styled.div`
   flex-direction: column;
 `;
 
-const NavButton = styled.button`
-  margin: 10px 0;
-  padding: 10px 0px;
-  font-size: 12px;
-  border: none;
-  color: blue;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  &:focus {
-    outline: none;
-  }
-`;
-
 const LogoButton = styled.button`
   margin: 10px 0;
   margin-top: -10px;
@@ -312,6 +301,7 @@ const LogoButton = styled.button`
   &:focus {
     outline: none;
   }
+  color: blue;
 `;
 
 const fakeFinalData = {
