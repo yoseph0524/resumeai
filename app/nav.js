@@ -11,10 +11,19 @@ import {
 } from "firebase/firestore";
 import styled from "styled-components";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { useDisclosure } from "@chakra-ui/react";
+import { Box, Tooltip, VStack, useDisclosure } from "@chakra-ui/react";
 import { useAuth } from "./Auth/AuthContext";
 import { db, auth } from "./firebase";
 import FileUploadModal from "./[number]/create/modal";
+import { motion } from "framer-motion";
+import Logo from "./logo";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChartBar,
+  faPlusCircle,
+  faUserCog,
+  faSignOutAlt,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function Nav() {
   const router = useRouter();
@@ -63,6 +72,7 @@ export default function Nav() {
     } catch (error) {
       console.error("Error adding document:", error);
       onClose();
+      router.push("/Dashboard");
     }
   };
 
@@ -123,6 +133,7 @@ export default function Nav() {
     if (selectedFile) {
       setUploading(true);
       uploadFile(selectedFile);
+      router.push(`/${number}/create/personalInfo`);
     } else {
       onClose();
     }
@@ -157,6 +168,7 @@ export default function Nav() {
     } catch (error) {
       console.error("Error extracting text from PDF:", error);
       alert("An error occurred while uploading the file.");
+      router.push("/Dashboard");
     }
   };
 
@@ -190,15 +202,33 @@ export default function Nav() {
   return (
     <NavContainer>
       <NavSection>
-        <NavButton
+        <LogoButton
           onClick={() => {
             router.push("/Dashboard");
           }}
         >
-          Dashboard
-        </NavButton>
-        <NavButton onClick={handleAnalyzeClick}>Analyze</NavButton>
-        <NavButton onClick={handleCreateClick}>Create</NavButton>
+          <Logo />
+        </LogoButton>
+        <Tooltip label="Analyze" fontSize="md">
+          <Box
+            as="button"
+            onClick={handleAnalyzeClick}
+            className="icon-button"
+            style={{ fontSize: "2rem", margin: "10px 0px" }}
+          >
+            <FontAwesomeIcon icon={faChartBar} className="icon" />
+          </Box>
+        </Tooltip>
+        <Tooltip label="Create" fontSize="md">
+          <Box
+            as="button"
+            onClick={handleCreateClick}
+            className="icon-button"
+            style={{ fontSize: "2rem", margin: "10px 0px" }}
+          >
+            <FontAwesomeIcon icon={faPlusCircle} className="icon" />
+          </Box>
+        </Tooltip>
         <FileUploadModal
           isOpen={isOpen}
           onClose={handleModalClose}
@@ -210,14 +240,28 @@ export default function Nav() {
         />
       </NavSection>
       <NavSection>
-        <NavButton
-          onClick={() => {
-            router.push("/UserSetting");
-          }}
-        >
-          User Setting
-        </NavButton>
-        <NavButton onClick={handleLogout}>Log Out</NavButton>
+        <Tooltip label="User Setting" fontSize="md">
+          <Box
+            as="button"
+            onClick={() => {
+              router.push("/UserSetting");
+            }}
+            className="icon-button"
+            style={{ fontSize: "2rem", margin: "10px 0px" }}
+          >
+            <FontAwesomeIcon icon={faUserCog} className="icon" />
+          </Box>
+        </Tooltip>
+        <Tooltip label="Log Out" fontSize="md">
+          <Box
+            as="button"
+            onClick={handleLogout}
+            className="icon-button"
+            style={{ fontSize: "2rem", margin: "10px 0px" }}
+          >
+            <FontAwesomeIcon icon={faSignOutAlt} className="icon" />
+          </Box>
+        </Tooltip>
       </NavSection>
     </NavContainer>
   );
@@ -231,7 +275,7 @@ const NavContainer = styled.div`
   padding: 20px;
   background-color: #f0f0f0;
   border-right: 1px solid #ccc;
-  width: 120px;
+  width: 80px;
 `;
 
 const NavSection = styled.div`
@@ -243,17 +287,26 @@ const NavButton = styled.button`
   margin: 10px 0;
   padding: 10px 0px;
   font-size: 12px;
-  color: white;
-  background-color: #0070f3;
+  border: none;
+  color: blue;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  &:focus {
+    outline: none;
+  }
+`;
+
+const LogoButton = styled.button`
+  margin: 10px 0;
+  margin-top: -10px;
+  font-size: 12px;
+  padding: 0px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #005bb5;
-  }
-
+  font-size: 1.5rem;
   &:focus {
     outline: none;
   }

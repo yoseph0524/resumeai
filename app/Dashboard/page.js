@@ -50,6 +50,7 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Error adding document:", error);
       onClose();
+      router.push("/Dashboard");
     }
   };
 
@@ -130,6 +131,7 @@ export default function Dashboard() {
     if (selectedFile) {
       setUploading(true);
       uploadFile(selectedFile);
+      router.push(`/${number}/create/personalInfo`);
     } else {
       onClose();
     }
@@ -193,6 +195,7 @@ export default function Dashboard() {
         "An error occurred. Please try again. It is most likely that your file is not a resume or in PDF format."
       );
       onClose();
+      router.push("/Dashboard");
     }
   };
 
