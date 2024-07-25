@@ -152,7 +152,7 @@ export default function PersonalInfo() {
               <Link href={`/${number}/create/experience`}>
                 <button
                   style={buttonStyle}
-                  type="button" // Use type="button" to prevent form submission
+                  type="submit" // Use type="button" to prevent form submission
                   className="button"
                   onClick={() => console.log(personalInfo)}
                 >
