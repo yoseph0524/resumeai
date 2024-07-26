@@ -14,6 +14,7 @@ import {
 import { db } from "@/app/firebase"; // Adjust the import based on your project structure
 import getData, { getNumber } from "../script";
 import { buttonStyle, marginStyle, topStyle } from "../component";
+import { useRouter } from "next/navigation";
 
 export default function Coursework() {
   const [coursework, setCoursework] = useState([
@@ -113,6 +114,35 @@ export default function Coursework() {
           await updateDoc(docRef, { coursework });
           alert("Saved!");
           console.log(coursework);
+        } else {
+          alert("No resume data found to update.");
+        }
+      } catch (error) {
+        console.error("Error updating document: ", error);
+        alert("Failed to update data.");
+      }
+    } else {
+      alert("No user is signed in.");
+    }
+  };
+
+  const router = useRouter();
+  const handleClick = async (e) => {
+    e.preventDefault();
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+      try {
+        // Query to get the first document in the resume_data collection
+        const collectionRef = collection(db, "users", user.uid, "resume_data");
+        const querySnapshot = await getDocs(collectionRef);
+        if (!querySnapshot.empty) {
+          const docRef = doc(collectionRef, number);
+
+          // Update the document with the coursework field
+          await updateDoc(docRef, { coursework });
+          router.push(`/${number}/create/skill`);
         } else {
           alert("No resume data found to update.");
         }
@@ -256,11 +286,14 @@ export default function Coursework() {
                 <button style={buttonStyle} type="submit" className="button">
                   Save
                 </button>
-                <Link href={`/${number}/create/skill`}>
-                  <button style={buttonStyle} type="submit" className="button">
-                    Next
-                  </button>
-                </Link>
+                <button
+                  style={buttonStyle}
+                  type="button"
+                  onClick={handleClick}
+                  className="button"
+                >
+                  Next
+                </button>
               </div>
             </form>
           </div>

@@ -88,7 +88,7 @@ export default function Review() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userMessages: [fakeFinalData],
+          userMessages: [jsonData],
         }),
       }
     );

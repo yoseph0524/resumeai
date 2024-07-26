@@ -14,6 +14,7 @@ import {
 import { db } from "@/app/firebase"; // Adjust the import based on your project structure
 import getData, { getNumber } from "../script";
 import { buttonStyle, marginStyle, topStyle } from "../component";
+import { useRouter } from "next/navigation";
 
 export default function Summary() {
   const [summary, setSummary] = useState("");
@@ -69,7 +70,35 @@ export default function Summary() {
       alert("No user is signed in.");
     }
   };
+  const router = useRouter();
+  const handleClick = async (e) => {
+    e.preventDefault();
+    const auth = getAuth();
+    const user = auth.currentUser;
 
+    if (user) {
+      try {
+        // Query to get the first document in the resume_data collection
+        const collectionRef = collection(db, "users", user.uid, "resume_data");
+        const querySnapshot = await getDocs(collectionRef);
+
+        if (!querySnapshot.empty) {
+          const docRef = doc(collectionRef, number);
+
+          // Update the document with the summary field
+          await updateDoc(docRef, { summary });
+          router.push(`/${number}/create/review`);
+        } else {
+          alert("No resume data found to update.");
+        }
+      } catch (error) {
+        console.error("Error updating document: ", error);
+        alert("Failed to update data.");
+      }
+    } else {
+      alert("No user is signed in.");
+    }
+  };
   return (
     <div>
       <Navbar activepath="/create/summary" />
@@ -91,11 +120,10 @@ export default function Summary() {
               <button style={buttonStyle} type="submit">
                 Save
               </button>
-              <Link href={`/${number}/create/review`}>
-                <button style={buttonStyle} type="button">
-                  Next
-                </button>
-              </Link>
+
+              <button style={buttonStyle} type="button" onClick={handleClick}>
+                Next
+              </button>
             </div>
           </form>
         </div>
