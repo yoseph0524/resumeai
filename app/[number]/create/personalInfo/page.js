@@ -180,7 +180,7 @@ export default function PersonalInfo() {
                 style={buttonStyle}
                 type="button" // Use type="button" to prevent form submission
                 className="button"
-                onClick={handleSubmit}
+                onClick={handleClick}
               >
                 Next
               </button>
