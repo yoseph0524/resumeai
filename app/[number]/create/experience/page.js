@@ -183,7 +183,7 @@ export default function Experience() {
               {experience.map((exp, expIndex) => (
                 <div key={expIndex}>
                   <label htmlFor={`position-${expIndex}`} className="label">
-                    Position:
+                    Your Role At The Company:
                   </label>
                   <input
                     type="text"
@@ -195,7 +195,7 @@ export default function Experience() {
                   />
 
                   <label htmlFor={`company-${expIndex}`} className="label">
-                    Company:
+                    Your Company Name:
                   </label>
                   <input
                     type="text"
@@ -206,7 +206,7 @@ export default function Experience() {
                     className="input"
                   />
                   <label htmlFor={`location-${expIndex}`} className="label">
-                    Location:
+                    Location Of The Company:
                   </label>
                   <input
                     type="text"

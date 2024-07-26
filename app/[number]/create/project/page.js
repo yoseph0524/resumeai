@@ -190,7 +190,7 @@ export default function Project() {
               {project.map((proj, index) => (
                 <div key={index}>
                   <label htmlFor={`title-${index}`} className="label">
-                    Title:
+                    Title Of The Project:
                   </label>
                   <input
                     type="text"
@@ -202,7 +202,7 @@ export default function Project() {
                   />
 
                   <label htmlFor={`organization-${index}`} className="label">
-                    Organization:
+                    Organization Of The Project:
                   </label>
                   <input
                     type="text"
@@ -258,7 +258,7 @@ export default function Project() {
                     className="input"
                   />
                   <label htmlFor={`used-${index}`} className="label">
-                    Used:
+                    Used Technologies:
                   </label>
                   <input
                     type="text"

@@ -16,8 +16,10 @@ import {
 import { db } from "@/app/firebase"; // Adjust the import based on your project structure
 import Nav from "@/app/nav";
 import { buttonStyle, marginStyle, topStyle } from "../component";
+import { useRouter } from "next/navigation";
 
 export default function PersonalInfo() {
+  const router = useRouter();
   const [personalInfo, setPersonalInfo] = useState({
     name: "",
     email: "",
@@ -75,6 +77,31 @@ export default function PersonalInfo() {
     }
   };
 
+  const handleClick = async (e) => {
+    e.preventDefault();
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        const collectionRef = collection(db, "users", user.uid, "resume_data");
+        const querySnapshot = await getDocs(collectionRef);
+        if (!querySnapshot.empty) {
+          const docRef = doc(collectionRef, number);
+          await updateDoc(docRef, { personalInfo });
+          console.log("Document updated successfully:", personalInfo);
+          router.push(`/${number}/create/experience`);
+        } else {
+          console.log("No documents found in the collection.");
+        }
+      } catch (error) {
+        console.error("Error updating document: ", error);
+        alert("Failed to update data.");
+      }
+    } else {
+      alert("No user is signed in.");
+    }
+  };
+
   return (
     <div>
       <Navbar activepath="/create/personalInfo" />{" "}
@@ -84,7 +111,7 @@ export default function PersonalInfo() {
         <div className="container2">
           <form className="form" id="personalInfoForm" onSubmit={handleSubmit}>
             <label htmlFor="name" className="label">
-              Name: <Required />
+              Full Name: <Required />
             </label>
             <input
               type="text"
@@ -110,7 +137,7 @@ export default function PersonalInfo() {
             />
 
             <label htmlFor="phone" className="label">
-              Phone: <Required />
+              Phone Number: <Required />
             </label>
             <input
               type="tel"
@@ -149,16 +176,14 @@ export default function PersonalInfo() {
               <button style={buttonStyle} type="submit" className="button">
                 Save
               </button>
-              <Link href={`/${number}/create/experience`}>
-                <button
-                  style={buttonStyle}
-                  type="submit" // Use type="button" to prevent form submission
-                  className="button"
-                  onClick={handleSubmit}
-                >
-                  Next
-                </button>
-              </Link>
+              <button
+                style={buttonStyle}
+                type="button" // Use type="button" to prevent form submission
+                className="button"
+                onClick={handleSubmit}
+              >
+                Next
+              </button>
             </div>
           </form>
         </div>

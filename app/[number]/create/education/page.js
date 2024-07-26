@@ -187,7 +187,7 @@ export default function Education() {
               {education.map((edu, index) => (
                 <div key={index}>
                   <label htmlFor={`degree-${index}`} className="label">
-                    Degree:
+                    Degree Or Qualification Or Major:
                   </label>
                   <input
                     type="text"
@@ -211,7 +211,7 @@ export default function Education() {
                   />
 
                   <label htmlFor={`location-${index}`} className="label">
-                    Location:
+                    Location Of The Institution:
                   </label>
                   <input
                     type="text"
@@ -222,7 +222,7 @@ export default function Education() {
                     className="input"
                   />
                   <label htmlFor={`date-${index}`} className="label">
-                    When:
+                    When Did You Earn Your Degree/Qualification:
                   </label>
                   <input
                     type="text"
