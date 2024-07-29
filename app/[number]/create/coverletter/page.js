@@ -321,7 +321,6 @@ export default function Coverletter() {
             value={coverletterInfo.employer_address}
             onChange={handleChange}
             className="input"
-            required
           />
 
           <label className="label">Employer's City:</label>
@@ -332,7 +331,6 @@ export default function Coverletter() {
             value={coverletterInfo.employer_city}
             onChange={handleChange}
             className="input"
-            required
           />
           <label className="label">Employer's State:</label>
           <input
