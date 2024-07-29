@@ -22,7 +22,11 @@ import {
 } from "@chakra-ui/react";
 
 import { auth } from "@/app/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
 
 import { ViewIcon, ViewOffIcon, EmailIcon, LockIcon } from "@chakra-ui/icons";
 
@@ -90,6 +94,11 @@ function SignIn() {
         setIsButtonPressed(true);
         setErrorMsg("Invalid Credentials");
       });
+  };
+
+  const handleGoogle = async (e) => {
+    const provider = await new GoogleAuthProvider();
+    return signInWithPopup(auth, provider);
   };
 
   return (
@@ -186,6 +195,24 @@ function SignIn() {
                 onClick={handleSignIn}
               >
                 Sign In
+              </Button>
+              <Button
+                as={motion.button}
+                fontSize={"sm"}
+                fontWeight={600}
+                color={"white"}
+                bg={"#FF0080"}
+                href={"#"}
+                whileHover={{
+                  scale: 1.1,
+                  backgroundColor: "#e00071",
+                }}
+                whileTap={{
+                  scale: 0.9,
+                }}
+                onClick={handleGoogle}
+              >
+                Sign In With Google
               </Button>
             </VStack>
           </FormControl>
