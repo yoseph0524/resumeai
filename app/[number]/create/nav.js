@@ -38,9 +38,6 @@ export default function Navbar({ activepath }) {
   return (
     <div>
       <div>
-        <div>
-          <h1>Create Resume</h1>
-        </div>
         <nav className="navbar">
           <Link
             href={`/${number}/create/personalInfo`}

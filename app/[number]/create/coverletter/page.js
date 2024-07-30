@@ -356,6 +356,9 @@ export default function Coverletter() {
             <button style={buttonStyle} type="submit" className="button">
               Save
             </button>
+            <button style={buttonStyle} onClick={makeCoverletter}>
+              Create Coverletter
+            </button>
           </div>
         </form>
       </div>

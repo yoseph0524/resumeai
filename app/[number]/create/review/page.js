@@ -79,6 +79,13 @@ export default function Review() {
   const analyzeResume = async (jsonData) => {
     console.log("Type of fakeData:", typeof fakeFinalData);
     console.log("Type of jsonData:", typeof jsonData);
+    console.log(jsonData);
+    let ddd = JSON.stringify(jsonData)
+      .replace(/"/g, "")
+      .replace(/\\,/g, "")
+      .replace(/\\/g, "")
+      .replace(/ {10}/g, "");
+    console.log(ddd);
     setAnalyzeLoading(true);
     const response = await fetch(
       "https://fnhlgmlpxaugxpvyayrx2em44i0trwsq.lambda-url.us-east-1.on.aws/resumeanalyze",
@@ -88,7 +95,7 @@ export default function Review() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userMessages: [jsonData],
+          userMessages: [ddd],
         }),
       }
     );

@@ -3,29 +3,29 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  addDoc,
   collection,
-  deleteDoc,
   doc,
   getDocs,
   setDoc,
   updateDoc,
 } from "firebase/firestore";
-import { auth, db } from "../firebase";
-import Nav from "../nav";
 import styled from "styled-components";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useDisclosure } from "@chakra-ui/react";
-import FileUploadModal from "../[number]/create/modal";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
-import NavDashboard from "../navDashboard";
+import { useAuth } from "./Auth/AuthContext";
+import { db, auth } from "./firebase";
+import FileUploadModal from "./[number]/create/modal";
+import Logo from "./logo";
 
-export default function Dashboard() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+export default function Nav() {
   const router = useRouter();
-  const [resumeDataList, setResumeDataList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { signOut } = useAuth();
+  const handleLogout = async () => {
+    await signOut();
+    router.push("/Auth/SignIn");
+  };
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [number, setNumber] = useState(null);
   const [type, setType] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
@@ -45,14 +45,12 @@ export default function Dashboard() {
         await updateDoc(docRef, { title: { name: titleName, number: number } });
         console.log("Resume data successfully added with ID:", newDocId);
         fetchResumeData(); // Fetch the updated list after adding a new document
-        router.push(`/${number}/create/personalInfo`);
       } else {
         console.log("No user is signed in.");
       }
     } catch (error) {
       console.error("Error adding document:", error);
       onClose();
-      router.push("/Dashboard");
     }
   };
 
@@ -64,13 +62,10 @@ export default function Dashboard() {
         const querySnapshot = await getDocs(collectionRef);
 
         const resumes = querySnapshot.docs.map((doc) => doc.data());
-        setResumeDataList(resumes);
-        console.log(resumes);
       }
     } catch (error) {
       console.error("Error fetching documents: ", error);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -83,23 +78,6 @@ export default function Dashboard() {
     });
     return () => unsubscribe();
   }, []);
-
-  useEffect(() => {
-    // Dynamically load the pdf.js script
-    const script = document.createElement("script");
-    script.src =
-      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js";
-    script.onload = () => {
-      window.pdfjsLib = window.pdfjsLib || window["pdfjs-dist/build/pdf"];
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc =
-        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js";
-    };
-    document.body.appendChild(script);
-  }, []);
-
-  const handleResumeClick = (index) => {
-    router.push(`/${index}/create/personalInfo`);
-  };
 
   const handleCreateClick = () => {
     setType("create");
@@ -138,42 +116,38 @@ export default function Dashboard() {
     }
   };
 
-  const uploadFile = async (pdfFile) => {
-    if (!pdfFile) return;
+  const uploadFile = async (file) => {
+    if (!file) {
+      alert("Please select a file.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
 
     try {
-      const arrayBuffer = await pdfFile.arrayBuffer();
+      const response = await fetch("http://127.0.0.1:5000/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-      // Load PDF with pdf.js
-      const loadingTask = window.pdfjsLib.getDocument({ data: arrayBuffer });
-      const pdf = await loadingTask.promise;
-
-      let text = "";
-
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const textContent = await page.getTextContent();
-        textContent.items.forEach((item) => {
-          text += item.str + " ";
-        });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+      const result = await response.json();
 
-      // Clean up the text
-      const cleanedText = text.replace(/[^ -~\n\r\t]+/g, "").replace(/"/g, "");
-
-      console.log(cleanedText);
-
-      // Upload resume function (dummy function, replace with your actual upload function)
-      uploadResume(cleanedText);
+      console.log(result);
+      let text = result.text.replace(/[^ -~\n\r\t]+/g, "");
+      uploadResume(text.replace(/"/g, ""));
+      console.log(text);
     } catch (error) {
-      console.error("Error extracting text from PDF:", error);
+      console.error("Error:", error);
       alert("An error occurred while uploading the file.");
     }
   };
 
   const uploadResume = async (text) => {
     try {
-      console.log(text);
       const response = await fetch(
         "https://fnhlgmlpxaugxpvyayrx2em44i0trwsq.lambda-url.us-east-1.on.aws/resumeai",
         {
@@ -196,111 +170,72 @@ export default function Dashboard() {
         "An error occurred. Please try again. It is most likely that your file is not a resume or in PDF format."
       );
       onClose();
-      router.push("/Dashboard");
-    }
-  };
-
-  const handleDelete = async (resumeNumber) => {
-    try {
-      const user = auth.currentUser;
-      if (user) {
-        const docRef = doc(
-          db,
-          "users",
-          user.uid,
-          "resume_data",
-          String(resumeNumber)
-        );
-        console.log(docRef);
-        await deleteDoc(docRef);
-        console.log("Resume data successfully deleted with ID:", resumeNumber);
-        fetchResumeData(); // Fetch the updated list after deleting a document
-      } else {
-        console.log("No user is signed in.");
-      }
-    } catch (error) {
-      console.error("Error deleting document:", error);
     }
   };
 
   return (
-    <div style={{ display: "flex" }}>
-      <NavDashboard />
-      <Container>
-        <ResumeList>
-          <ResumeItem>
-            <Button onClick={handleAnalyzeClick}>Analyze</Button>
-            <Button onClick={handleCreateClick}>Create</Button>
-            <FileUploadModal
-              isOpen={isOpen}
-              onClose={handleModalClose}
-              makeTitle={makeTitle}
-              changeTitle={changeTitle}
-              onFileSelect={handleFileSelect}
-              uploading={uploading}
-              type={type}
-            />
-          </ResumeItem>
-          {loading ? (
-            <></>
-          ) : (
-            resumeDataList
-              .slice()
-              .reverse()
-              .map((resume, index) => (
-                <ResumeItem key={index}>
-                  <Button
-                    onClick={() => handleResumeClick(resume.title.number)}
-                  >
-                    {resume.title.name}
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      handleDelete(resume.title.number);
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faTrash} className="icon" />
-                  </Button>
-                </ResumeItem>
-              ))
-          )}
-        </ResumeList>
-      </Container>
-    </div>
+    <NavContainer>
+      <NavSection>
+        <Button
+          onClick={() => {
+            router.push("/Dashboard");
+          }}
+        >
+          <Logo />
+        </Button>
+        <NavButton
+          onClick={() => {
+            router.push("/Dashboard");
+          }}
+        >
+          Dashboard
+        </NavButton>
+        <NavButton onClick={handleAnalyzeClick}>Analyze</NavButton>
+        <NavButton onClick={handleCreateClick}>Create</NavButton>
+        <FileUploadModal
+          isOpen={isOpen}
+          onClose={handleModalClose}
+          makeTitle={makeTitle}
+          changeTitle={changeTitle}
+          onFileSelect={handleFileSelect}
+          uploading={uploading}
+          type={type}
+        />
+      </NavSection>
+      <NavSection>
+        <NavButton
+          onClick={() => {
+            router.push("/UserSetting");
+          }}
+        >
+          User Setting
+        </NavButton>
+        <NavButton onClick={handleLogout}>Log Out</NavButton>
+      </NavSection>
+    </NavContainer>
   );
 }
 
-const Container = styled.div`
-  flex-grow: 1;
-  padding: 20px;
-  overflow-y: auto;
-  height: 100vh;
-`;
-
-const ResumeList = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
-  padding: 5vw 10vw;
-`;
-
-const ResumeItem = styled.div`
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+const NavContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  height: 200px;
+  justify-content: space-between;
+  height: 100vh;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border-right: 1px solid #ccc;
+  width: 20vh;
 `;
 
-const Button = styled.button`
+const NavSection = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const NavButton = styled.button`
   margin: 10px 0;
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 10px 0px;
+  font-size: 12px;
   color: white;
   background-color: #0070f3;
   border: none;
@@ -312,6 +247,20 @@ const Button = styled.button`
     background-color: #005bb5;
   }
 
+  &:focus {
+    outline: none;
+  }
+`;
+
+const Button = styled.button`
+  margin: 10px 0;
+  margin-top: -10px;
+  padding: 0px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 1.5rem;
   &:focus {
     outline: none;
   }
