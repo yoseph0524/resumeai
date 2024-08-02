@@ -116,32 +116,37 @@ export default function Nav() {
     }
   };
 
-  const uploadFile = async (file) => {
-    if (!file) {
-      alert("Please select a file.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-
+  const uploadFile = async (pdfFile) => {
+    console.log("what");
+    if (!pdfFile) return;
+    console.log("noway");
     try {
-      const response = await fetch("http://127.0.0.1:5000/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const arrayBuffer = await pdfFile.arrayBuffer();
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      // Load PDF with pdf.js
+      const loadingTask = window.pdfjsLib.getDocument({ data: arrayBuffer });
+      const pdf = await loadingTask.promise;
+
+      let text = "";
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        textContent.items.forEach((item) => {
+          text += item.str + " ";
+        });
       }
-      const result = await response.json();
 
-      console.log(result);
-      let text = result.text.replace(/[^ -~\n\r\t]+/g, "");
-      uploadResume(text.replace(/"/g, ""));
-      console.log(text);
+      // Clean up the text
+      const cleanedText = text.replace(/[^ -~\n\r\t]+/g, "").replace(/"/g, "");
+
+      console.log(cleanedText);
+
+      // Upload resume function (dummy function, replace with your actual upload function)
+      uploadResume(cleanedText);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error extracting text from PDF:", error);
+      router.reload();
       alert("An error occurred while uploading the file.");
     }
   };
@@ -149,7 +154,7 @@ export default function Nav() {
   const uploadResume = async (text) => {
     try {
       const response = await fetch(
-        "https://fnhlgmlpxaugxpvyayrx2em44i0trwsq.lambda-url.us-east-1.on.aws/resumeai",
+        "https://z2hmuccc2gtnxsf4o3maruls6y0yvmxn.lambda-url.us-east-1.on.aws/resumeai",
         {
           method: "POST",
           headers: {
@@ -170,6 +175,7 @@ export default function Nav() {
         "An error occurred. Please try again. It is most likely that your file is not a resume or in PDF format."
       );
       onClose();
+      router.reload();
     }
   };
 

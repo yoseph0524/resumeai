@@ -146,7 +146,7 @@ export default function Coverletter() {
       .replace(/ {10}/g, "");
 
     const response = await fetch(
-      "https://fnhlgmlpxaugxpvyayrx2em44i0trwsq.lambda-url.us-east-1.on.aws/coverletter",
+      "https://z2hmuccc2gtnxsf4o3maruls6y0yvmxn.lambda-url.us-east-1.on.aws/coverletter",
       {
         method: "POST",
         headers: {

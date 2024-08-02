@@ -139,8 +139,9 @@ export default function Nav() {
     }
   };
   const uploadFile = async (pdfFile) => {
+    console.log("what");
     if (!pdfFile) return;
-
+    console.log("noway");
     try {
       const arrayBuffer = await pdfFile.arrayBuffer();
 
@@ -167,15 +168,15 @@ export default function Nav() {
       uploadResume(cleanedText);
     } catch (error) {
       console.error("Error extracting text from PDF:", error);
+      router.reload();
       alert("An error occurred while uploading the file.");
-      router.push("/Dashboard");
     }
   };
 
   const uploadResume = async (text) => {
     try {
       const response = await fetch(
-        "https://fnhlgmlpxaugxpvyayrx2em44i0trwsq.lambda-url.us-east-1.on.aws/resumeai",
+        "https://z2hmuccc2gtnxsf4o3maruls6y0yvmxn.lambda-url.us-east-1.on.aws/resumeai",
         {
           method: "POST",
           headers: {
@@ -195,7 +196,8 @@ export default function Nav() {
       alert(
         "An error occurred. Please try again. It is most likely that your file is not a resume or in PDF format."
       );
-      onClose();
+      router.reload();
+      console.log("what");
     }
   };
 

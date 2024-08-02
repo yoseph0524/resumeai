@@ -88,7 +88,7 @@ export default function Review() {
     console.log(ddd);
     setAnalyzeLoading(true);
     const response = await fetch(
-      "https://fnhlgmlpxaugxpvyayrx2em44i0trwsq.lambda-url.us-east-1.on.aws/resumeanalyze",
+      "https://z2hmuccc2gtnxsf4o3maruls6y0yvmxn.lambda-url.us-east-1.on.aws/resumeanalyze",
       {
         method: "POST",
         headers: {

@@ -175,7 +175,7 @@ export default function Dashboard() {
     try {
       console.log(text);
       const response = await fetch(
-        "https://fnhlgmlpxaugxpvyayrx2em44i0trwsq.lambda-url.us-east-1.on.aws/resumeai",
+        "https://z2hmuccc2gtnxsf4o3maruls6y0yvmxn.lambda-url.us-east-1.on.aws/resumeai",
         {
           method: "POST",
           headers: {
@@ -186,6 +186,7 @@ export default function Dashboard() {
           }),
         }
       );
+      console.log("hurray");
       const data = await response.json();
       onsubmit(JSON.parse(data.assistant));
       setUploading(false);
