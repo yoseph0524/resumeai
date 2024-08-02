@@ -16,6 +16,9 @@ import { db } from "@/app/firebase"; // Adjust the import based on your project 
 import getData, { getNumber } from "../script";
 import { buttonStyle, marginStyle, topStyle } from "../component";
 import { useRouter } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Tooltip } from "@chakra-ui/react";
 
 export default function Education() {
   const [education, setEducation] = useState([
@@ -197,14 +200,16 @@ export default function Education() {
                     >
                       {edu.degree}
                     </label>
-                    <button
-                      style={buttonStyle}
-                      type="button"
-                      className="button"
-                      onClick={() => deleteEducation(index)}
-                    >
-                      Delete Education
-                    </button>
+                    <Tooltip label="Delete" fontSize="md">
+                      <button
+                        style={buttonStyle}
+                        type="button"
+                        className="button"
+                        onClick={() => deleteEducation(index)}
+                      >
+                        <FontAwesomeIcon icon={faTrash} className="icon" />
+                      </button>
+                    </Tooltip>
                   </div>
                 ) : null
               )}
@@ -302,14 +307,16 @@ export default function Education() {
                         className="input"
                         style={{ flex: 1, marginRight: "0.5rem" }}
                       />
-                      <button
-                        style={{ ...buttonStyle, ...topStyle }}
-                        type="button"
-                        className="button"
-                        onClick={() => deleteExtra(index, extraIndex)}
-                      >
-                        Delete
-                      </button>
+                      <Tooltip label="Delete" fontSize="md">
+                        <button
+                          style={{ ...buttonStyle, ...topStyle }}
+                          type="button"
+                          className="button"
+                          onClick={() => deleteExtra(index, extraIndex)}
+                        >
+                          <FontAwesomeIcon icon={faTrash} className="icon" />
+                        </button>
+                      </Tooltip>
                     </div>
                   ))}
                   <button

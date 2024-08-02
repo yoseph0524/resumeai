@@ -255,6 +255,7 @@ export default function Dashboard() {
                   >
                     {resume.title.name}
                   </Button>
+
                   <Button
                     onClick={() => {
                       handleDelete(resume.title.number);

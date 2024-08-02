@@ -15,7 +15,9 @@ import { db } from "@/app/firebase"; // Adjust the import based on your project 
 import getData, { getNumber } from "../script";
 import { buttonStyle, marginStyle, topStyle } from "../component";
 import { useRouter } from "next/navigation";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Tooltip } from "@chakra-ui/react";
 export default function Skill() {
   const [skill, setSkill] = useState([
     {
@@ -174,14 +176,16 @@ export default function Skill() {
                     >
                       {ski.type}
                     </label>
-                    <button
-                      style={buttonStyle}
-                      type="button"
-                      className="button"
-                      onClick={() => deleteSkill(index)}
-                    >
-                      Delete Skill
-                    </button>
+                    <Tooltip label="Delete" fontSize="md">
+                      <button
+                        style={buttonStyle}
+                        type="button"
+                        className="button"
+                        onClick={() => deleteSkill(index)}
+                      >
+                        <FontAwesomeIcon icon={faTrash} className="icon" />
+                      </button>
+                    </Tooltip>
                   </div>
                 ) : null
               )}
@@ -217,14 +221,16 @@ export default function Skill() {
                         className="input"
                         style={{ flex: 1, marginRight: "0.5rem" }}
                       />
-                      <button
-                        style={{ ...buttonStyle, ...topStyle }}
-                        type="button"
-                        className="button"
-                        onClick={() => deleteList(index, listIndex)}
-                      >
-                        Delete
-                      </button>
+                      <Tooltip label="Delete" fontSize="md">
+                        <button
+                          style={{ ...buttonStyle, ...topStyle }}
+                          type="button"
+                          className="button"
+                          onClick={() => deleteList(index, listIndex)}
+                        >
+                          <FontAwesomeIcon icon={faTrash} className="icon" />
+                        </button>
+                      </Tooltip>
                     </div>
                   ))}
                   <button

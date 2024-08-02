@@ -168,7 +168,6 @@ function SignUp() {
           last_name: formData.lastName,
           email: formData.email,
           date_of_birth: Timestamp.fromDate(new Date(formData.dateOfBirth)),
-          resume_data: [],
         });
         console.log("Document written with ID: ", userDocRef.id);
       } catch (e) {

@@ -99,6 +99,33 @@ export default function Summary() {
       alert("No user is signed in.");
     }
   };
+
+  const aiGenerate = async (desc) => {
+    try {
+      const response = await fetch(
+        "https://z2hmuccc2gtnxsf4o3maruls6y0yvmxn.lambda-url.us-east-1.on.aws/aigenerate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userMessages: [desc],
+          }),
+        }
+      );
+      const data = await response.json();
+
+      // Debugging the response
+      console.log("AI Response:", data);
+
+      const newDescription = data.assistant;
+      console.log(typeof data.assistant);
+      setSummary(newDescription);
+    } catch (error) {
+      console.error("Error generating AI description:", error);
+    }
+  };
   return (
     <div>
       <Navbar activepath="/create/summary" />
@@ -117,6 +144,13 @@ export default function Summary() {
             ></textarea>
 
             <div className="buttonContainer">
+              <button
+                style={buttonStyle}
+                type="button"
+                onClick={() => aiGenerate(summary)}
+              >
+                AI Generate
+              </button>
               <button style={buttonStyle} type="submit">
                 Save
               </button>

@@ -15,6 +15,9 @@ import { db } from "@/app/firebase"; // Adjust the import based on your project 
 import getData, { getNumber } from "../script";
 import { buttonStyle, marginStyle, topStyle } from "../component";
 import { useRouter } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Tooltip } from "@chakra-ui/react";
 
 export default function Experience() {
   const [experience, setExperience] = useState([
@@ -163,6 +166,37 @@ export default function Experience() {
     }
   };
 
+  const aiGenerate = async (expIndex, descIndex, desc) => {
+    try {
+      const response = await fetch(
+        "https://z2hmuccc2gtnxsf4o3maruls6y0yvmxn.lambda-url.us-east-1.on.aws/aigenerate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userMessages: [desc],
+          }),
+        }
+      );
+      const data = await response.json();
+
+      // Debugging the response
+      console.log("AI Response:", data);
+
+      const newDescription = data.assistant;
+
+      setExperience((prevExperiences) => {
+        const updatedExperiences = [...prevExperiences];
+        updatedExperiences[expIndex].description[descIndex] = newDescription;
+        return updatedExperiences;
+      });
+    } catch (error) {
+      console.error("Error generating AI description:", error);
+    }
+  };
+
   return (
     <div>
       <Navbar activepath="/create/experience" />
@@ -192,14 +226,16 @@ export default function Experience() {
                     >
                       {exp.position}
                     </label>
-                    <button
-                      style={buttonStyle}
-                      type="button"
-                      className="button"
-                      onClick={() => deleteExperience(index)}
-                    >
-                      Delete Experience
-                    </button>
+                    <Tooltip label="Delete" fontSize="md">
+                      <button
+                        style={buttonStyle}
+                        type="button"
+                        className="button"
+                        onClick={() => deleteExperience(index)}
+                      >
+                        <FontAwesomeIcon icon={faTrash} className="icon" />
+                      </button>
+                    </Tooltip>
                   </div>
                 ) : null
               )}
@@ -278,22 +314,41 @@ export default function Experience() {
                         display: "flex",
                       }}
                     >
-                      <input
+                      <textarea
                         name={`description-${descIndex}`}
                         value={desc}
                         onChange={(e) =>
                           handleDescriptionChange(expIndex, descIndex, e)
                         }
-                        className="input"
-                      ></input>
-                      <button
-                        style={{ ...buttonStyle, ...topStyle }}
-                        type="button"
-                        className="button"
-                        onClick={() => deleteDescription(expIndex, descIndex)}
-                      >
-                        Delete
-                      </button>
+                        className="textarea"
+                      ></textarea>
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        {" "}
+                        <Tooltip label="AI Generate" fontSize="md">
+                          <button
+                            style={{ ...buttonStyle, ...topStyle }}
+                            type="button"
+                            className="button"
+                            onClick={() =>
+                              aiGenerate(expIndex, descIndex, desc)
+                            }
+                          >
+                            AI
+                          </button>
+                        </Tooltip>
+                        <Tooltip label="Delete" fontSize="md">
+                          <button
+                            style={{ ...buttonStyle, ...topStyle }}
+                            type="button"
+                            className="button"
+                            onClick={() =>
+                              deleteDescription(expIndex, descIndex)
+                            }
+                          >
+                            <FontAwesomeIcon icon={faTrash} className="icon" />
+                          </button>
+                        </Tooltip>
+                      </div>
                     </div>
                   ))}
                   <button

@@ -16,6 +16,9 @@ import { db } from "@/app/firebase"; // Adjust the import based on your project 
 import getData, { getNumber } from "../script";
 import { buttonStyle, marginStyle, topStyle } from "../component";
 import { useRouter } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Tooltip } from "@chakra-ui/react";
 
 export default function Project() {
   const [project, setProject] = useState([
@@ -171,6 +174,37 @@ export default function Project() {
     }
   };
 
+  const aiGenerate = async (expIndex, descIndex, desc) => {
+    try {
+      const response = await fetch(
+        "https://z2hmuccc2gtnxsf4o3maruls6y0yvmxn.lambda-url.us-east-1.on.aws/aigenerate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userMessages: [desc],
+          }),
+        }
+      );
+      const data = await response.json();
+
+      // Debugging the response
+      console.log("AI Response:", data);
+
+      const newDescription = data.assistant;
+
+      setProject((prevProject) => {
+        const updatedProject = [...prevProject];
+        updatedProject[expIndex].accomplishment[descIndex] = newDescription;
+        return updatedProject;
+      });
+    } catch (error) {
+      console.error("Error generating AI description:", error);
+    }
+  };
+
   return (
     <div>
       <Navbar activepath="/create/project" />
@@ -200,14 +234,16 @@ export default function Project() {
                     >
                       {proj.title}
                     </label>
-                    <button
-                      style={buttonStyle}
-                      type="button"
-                      className="button"
-                      onClick={() => deleteProject(index)}
-                    >
-                      Delete Project
-                    </button>
+                    <Tooltip label="Delete" fontSize="md">
+                      <button
+                        style={buttonStyle}
+                        type="button"
+                        className="button"
+                        onClick={() => deleteProject(index)}
+                      >
+                        <FontAwesomeIcon icon={faTrash} className="icon" />
+                      </button>
+                    </Tooltip>
                   </div>
                 ) : null
               )}
@@ -307,7 +343,7 @@ export default function Project() {
                         display: "flex",
                       }}
                     >
-                      <input
+                      <textarea
                         name={`accomplishment-${descIndex}`}
                         value={desc}
                         onChange={(e) =>
@@ -316,14 +352,31 @@ export default function Project() {
                         className="input"
                         style={{ flex: 1, marginRight: "0.5rem" }}
                       />
-                      <button
-                        style={{ ...buttonStyle, ...topStyle }}
-                        type="button"
-                        className="button"
-                        onClick={() => deleteAccomplishment(index, descIndex)}
-                      >
-                        Delete
-                      </button>
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        {" "}
+                        <Tooltip label="AI Generate" fontSize="md">
+                          <button
+                            style={{ ...buttonStyle, ...topStyle }}
+                            type="button"
+                            className="button"
+                            onClick={() => aiGenerate(index, descIndex, desc)}
+                          >
+                            AI
+                          </button>
+                        </Tooltip>
+                        <Tooltip label="Delete" fontSize="md">
+                          <button
+                            style={{ ...buttonStyle, ...topStyle }}
+                            type="button"
+                            className="button"
+                            onClick={() =>
+                              deleteAccomplishment(index, descIndex)
+                            }
+                          >
+                            <FontAwesomeIcon icon={faTrash} className="icon" />
+                          </button>
+                        </Tooltip>
+                      </div>
                     </div>
                   ))}
                   <button
